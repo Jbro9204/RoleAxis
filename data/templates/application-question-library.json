@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0.0",
+  "categories": [
+    {
+      "key": "identity",
+      "label": "Identity",
+      "defaultRiskLevel": "low",
+      "defaultAutomationMode": "safe_auto",
+      "sensitivity": "personal",
+      "examplePrompts": ["Legal name", "Preferred name", "Email address", "Phone number"],
+      "notes": "Use verified profile contact fields."
+    },
+    {
+      "key": "work_authorization",
+      "label": "Work Authorization",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Are you authorized to work in the United States?", "Can you provide proof of employment eligibility?"],
+      "notes": "Ask explicitly during intake. Do not infer."
+    },
+    {
+      "key": "sponsorship",
+      "label": "Sponsorship",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Will you require sponsorship now or in the future?", "Do you require visa sponsorship?"],
+      "notes": "Ask explicitly during intake. Do not infer."
+    },
+    {
+      "key": "military",
+      "label": "Military and Veteran Status",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Voluntary protected veteran status", "Veteran self-identification", "Military spouse status"],
+      "notes": "Voluntary and sensitive. Never infer from resume."
+    },
+    {
+      "key": "disability",
+      "label": "Disability and Accommodation",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Voluntary disability self-identification", "Can you perform the essential functions with or without accommodation?"],
+      "notes": "Voluntary and sensitive. Never infer from resume. Accommodation questions may require manual review."
+    },
+    {
+      "key": "demographic",
+      "label": "Voluntary Demographics",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Race or ethnicity", "Gender", "Voluntary self-identification"],
+      "notes": "Do not infer. Use only configured user preference."
+    },
+    {
+      "key": "background",
+      "label": "Background and Criminal History",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "manual_only",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Are you willing to submit to a background check?", "Have you been convicted of a felony?"],
+      "notes": "Legal sensitivity varies by jurisdiction. Prefer manual review."
+    },
+    {
+      "key": "compensation",
+      "label": "Compensation",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Desired salary", "Minimum hourly rate", "Salary expectations"],
+      "notes": "Use configured range. Salary history questions require special handling."
+    },
+    {
+      "key": "attestation",
+      "label": "Final Attestation",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "manual_only",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["I certify that my answers are true", "Electronic signature", "I agree to the terms"],
+      "notes": "Do not auto-submit unless user rules explicitly allow it."
+    }
+  ]
+}
+

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0.0",
+  "intakeId": "intake_local_draft",
+  "profileId": "profile_local_draft",
+  "status": "not_started",
+  "answers": [
+    {
+      "questionKey": "work_authorization.us_authorized",
+      "prompt": "Are you legally authorized to work in the United States?",
+      "category": "work_authorization",
+      "riskLevel": "high",
+      "automationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "value": null,
+      "source": "intake",
+      "approved": false,
+      "approvedAt": null,
+      "expiresAt": null,
+      "notes": "Do not infer from resume."
+    },
+    {
+      "questionKey": "sponsorship.requires_now_or_future",
+      "prompt": "Will you now or in the future require employer sponsorship?",
+      "category": "sponsorship",
+      "riskLevel": "high",
+      "automationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "value": null,
+      "source": "intake",
+      "approved": false,
+      "approvedAt": null,
+      "expiresAt": null,
+      "notes": "Requires explicit user answer."
+    },
+    {
+      "questionKey": "military.protected_veteran_response",
+      "prompt": "How should RoleAxis answer voluntary protected veteran questions?",
+      "category": "military",
+      "riskLevel": "restricted",
+      "automationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "value": null,
+      "source": "intake",
+      "approved": false,
+      "approvedAt": null,
+      "expiresAt": null,
+      "notes": "Voluntary response. Never infer."
+    },
+    {
+      "questionKey": "disability.self_identification_response",
+      "prompt": "How should RoleAxis answer voluntary disability self-identification questions?",
+      "category": "disability",
+      "riskLevel": "restricted",
+      "automationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "value": null,
+      "source": "intake",
+      "approved": false,
+      "approvedAt": null,
+      "expiresAt": null,
+      "notes": "Voluntary response. Never infer."
+    },
+    {
+      "questionKey": "account_creation.allow_portal_accounts",
+      "prompt": "May RoleAxis create job portal accounts when required to submit an application?",
+      "category": "account_creation",
+      "riskLevel": "high",
+      "automationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "value": false,
+      "source": "intake",
+      "approved": false,
+      "approvedAt": null,
+      "expiresAt": null,
+      "notes": "Portal passwords must use credential vault references only."
+    },
+    {
+      "questionKey": "attestation.final_submit_rule",
+      "prompt": "When should RoleAxis submit final attestations on your behalf?",
+      "category": "attestation",
+      "riskLevel": "restricted",
+      "automationMode": "manual_only",
+      "sensitivity": "sensitive",
+      "value": null,
+      "source": "intake",
+      "approved": false,
+      "approvedAt": null,
+      "expiresAt": null,
+      "notes": "Final attestations should remain conservative until explicitly configured."
+    }
+  ],
+  "metadata": {
+    "createdAt": "",
+    "updatedAt": "",
+    "completedAt": null
+  }
+}
+

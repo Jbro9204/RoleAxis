@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/automation-rules.schema.json",
+  "title": "RoleAxis Automation Rules",
+  "type": "object",
+  "required": ["schemaVersion", "rulesId", "profileId", "mode", "search", "application", "approvalCheckpoints", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0.0" },
+    "rulesId": { "type": "string" },
+    "profileId": { "type": "string" },
+    "mode": { "enum": ["prepare_only", "approval_required", "trusted_auto_apply", "high_volume"] },
+    "search": {
+      "type": "object",
+      "required": ["targetTitles", "locations", "remotePreference", "salaryMinimum", "sources", "blockedCompanies"],
+      "additionalProperties": false,
+      "properties": {
+        "targetTitles": { "type": "array", "items": { "type": "string" } },
+        "industries": { "type": "array", "items": { "type": "string" } },
+        "locations": { "type": "array", "items": { "type": "string" } },
+        "commuteRadiusMiles": { "type": ["number", "null"], "minimum": 0 },
+        "remotePreference": { "enum": ["remote", "hybrid", "onsite", "any"] },
+        "salaryMinimum": { "type": ["number", "null"], "minimum": 0 },
+        "employmentTypes": { "type": "array", "items": { "enum": ["full_time", "part_time", "contract", "temporary", "internship", "seasonal"] } },
+        "sources": { "type": "array", "items": { "type": "string" } },
+        "blockedCompanies": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "application": {
+      "type": "object",
+      "required": ["minimumMatchScore", "dailyApplicationLimit", "allowAccountCreation", "allowAutoSubmit", "portalPolicy"],
+      "additionalProperties": false,
+      "properties": {
+        "minimumMatchScore": { "type": "number", "minimum": 0, "maximum": 100 },
+        "dailyApplicationLimit": { "type": "integer", "minimum": 0 },
+        "allowAccountCreation": { "type": "boolean" },
+        "allowAutoSubmit": { "type": "boolean" },
+        "portalPolicy": { "enum": ["allow_all_supported", "allowlist_only", "denylist_only", "manual_review"] },
+        "allowedPortals": { "type": "array", "items": { "type": "string" } },
+        "blockedPortals": { "type": "array", "items": { "type": "string" } },
+        "requireConfirmationCapture": { "type": "boolean" }
+      }
+    },
+    "approvalCheckpoints": {
+      "type": "object",
+      "required": ["sensitiveAnswers", "salaryQuestions", "customWrittenAnswers", "finalAttestations", "missingRequiredQualifications", "unsupportedQuestions"],
+      "additionalProperties": false,
+      "properties": {
+        "sensitiveAnswers": { "type": "boolean" },
+        "salaryQuestions": { "type": "boolean" },
+        "customWrittenAnswers": { "type": "boolean" },
+        "finalAttestations": { "type": "boolean" },
+        "missingRequiredQualifications": { "type": "boolean" },
+        "unsupportedQuestions": { "type": "boolean" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["createdAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  }
+}
+

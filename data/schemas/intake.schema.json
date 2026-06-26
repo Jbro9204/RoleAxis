@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/intake.schema.json",
+  "title": "RoleAxis Intake",
+  "type": "object",
+  "required": ["schemaVersion", "intakeId", "profileId", "status", "answers", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0.0" },
+    "intakeId": { "type": "string" },
+    "profileId": { "type": "string" },
+    "status": { "enum": ["not_started", "in_progress", "complete", "needs_review"] },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["questionKey", "category", "riskLevel", "automationMode", "sensitivity", "value", "source", "approved"],
+        "additionalProperties": false,
+        "properties": {
+          "questionKey": { "type": "string" },
+          "prompt": { "type": "string" },
+          "category": {
+            "enum": [
+              "identity",
+              "contact",
+              "work_authorization",
+              "sponsorship",
+              "compensation",
+              "availability",
+              "location",
+              "schedule",
+              "education",
+              "experience",
+              "certification",
+              "license",
+              "military",
+              "disability",
+              "demographic",
+              "background",
+              "drug_testing",
+              "physical_requirement",
+              "reference",
+              "account_creation",
+              "attestation",
+              "custom"
+            ]
+          },
+          "riskLevel": { "enum": ["low", "medium", "high", "restricted"] },
+          "automationMode": { "enum": ["safe_auto", "ask_once", "review_before_submit", "manual_only"] },
+          "sensitivity": { "enum": ["public", "internal", "personal", "sensitive", "secret"] },
+          "value": {},
+          "source": { "enum": ["resume", "intake", "manual", "imported", "system_default"] },
+          "approved": { "type": "boolean" },
+          "approvedAt": { "type": ["string", "null"] },
+          "expiresAt": { "type": ["string", "null"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["createdAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "completedAt": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
+

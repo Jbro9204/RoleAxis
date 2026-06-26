@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/application.schema.json",
+  "title": "RoleAxis Application",
+  "type": "object",
+  "required": ["schemaVersion", "applicationId", "jobId", "profileId", "status", "automationMode", "documents", "answers", "portal", "timeline", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0.0" },
+    "applicationId": { "type": "string" },
+    "jobId": { "type": "string" },
+    "profileId": { "type": "string" },
+    "status": { "enum": ["draft", "needs_review", "submitted", "interview", "rejected", "withdrawn", "closed"] },
+    "automationMode": { "enum": ["prepare_only", "approval_required", "trusted_auto_apply", "high_volume"] },
+    "documents": {
+      "type": "object",
+      "required": ["resumeVersionId"],
+      "additionalProperties": false,
+      "properties": {
+        "resumeVersionId": { "type": "string" },
+        "coverLetterVersionId": { "type": ["string", "null"] },
+        "attachments": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["questionText", "category", "answer", "source", "riskLevel", "automationMode", "approved"],
+        "additionalProperties": false,
+        "properties": {
+          "questionText": { "type": "string" },
+          "category": { "type": "string" },
+          "answer": {},
+          "source": { "enum": ["profile", "intake", "manual", "generated_document", "portal_default"] },
+          "riskLevel": { "enum": ["low", "medium", "high", "restricted"] },
+          "automationMode": { "enum": ["safe_auto", "ask_once", "review_before_submit", "manual_only"] },
+          "approved": { "type": "boolean" },
+          "approvedAt": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "portal": {
+      "type": "object",
+      "required": ["type", "url", "accountCreated"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string" },
+        "url": { "type": "string" },
+        "accountCreated": { "type": "boolean" },
+        "loginEmail": { "type": "string" },
+        "credentialVaultRef": { "type": ["string", "null"] }
+      }
+    },
+    "confirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "confirmationNumber": { "type": "string" },
+        "confirmationUrl": { "type": "string" },
+        "artifactRefs": { "type": "array", "items": { "type": "string" } },
+        "capturedAt": { "type": "string" }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event", "createdAt"],
+        "additionalProperties": false,
+        "properties": {
+          "event": { "type": "string" },
+          "notes": { "type": "string" },
+          "createdAt": { "type": "string" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["createdAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "submittedAt": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
+

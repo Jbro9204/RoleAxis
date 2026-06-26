@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0.0",
+  "rulesId": "rules_local_draft",
+  "profileId": "profile_local_draft",
+  "mode": "approval_required",
+  "search": {
+    "targetTitles": [],
+    "industries": [],
+    "locations": [],
+    "commuteRadiusMiles": null,
+    "remotePreference": "any",
+    "salaryMinimum": null,
+    "employmentTypes": ["full_time"],
+    "sources": [],
+    "blockedCompanies": []
+  },
+  "application": {
+    "minimumMatchScore": 80,
+    "dailyApplicationLimit": 25,
+    "allowAccountCreation": false,
+    "allowAutoSubmit": false,
+    "portalPolicy": "manual_review",
+    "allowedPortals": [],
+    "blockedPortals": [],
+    "requireConfirmationCapture": true
+  },
+  "approvalCheckpoints": {
+    "sensitiveAnswers": true,
+    "salaryQuestions": true,
+    "customWrittenAnswers": true,
+    "finalAttestations": true,
+    "missingRequiredQualifications": true,
+    "unsupportedQuestions": true
+  },
+  "metadata": {
+    "createdAt": "",
+    "updatedAt": ""
+  }
+}
+

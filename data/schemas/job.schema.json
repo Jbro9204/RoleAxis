@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/job.schema.json",
+  "title": "RoleAxis Job",
+  "type": "object",
+  "required": ["schemaVersion", "jobId", "source", "company", "title", "status", "match", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0.0" },
+    "jobId": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["name", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "externalId": { "type": "string" },
+        "portalType": { "type": "string" }
+      }
+    },
+    "company": { "type": "string" },
+    "title": { "type": "string" },
+    "location": { "type": "string" },
+    "remoteType": { "enum": ["remote", "hybrid", "onsite", "unknown"] },
+    "salary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minimum": { "type": ["number", "null"] },
+        "maximum": { "type": ["number", "null"] },
+        "currency": { "type": "string" },
+        "period": { "enum": ["hour", "year", "month", "week", "unknown"] },
+        "rawText": { "type": "string" }
+      }
+    },
+    "description": { "type": "string" },
+    "requirements": { "type": "array", "items": { "type": "string" } },
+    "preferredQualifications": { "type": "array", "items": { "type": "string" } },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "status": { "enum": ["found", "review_queue", "saved", "skipped", "applied", "interviewing", "closed"] },
+    "match": {
+      "type": "object",
+      "required": ["score", "summary", "strengths", "concerns"],
+      "additionalProperties": false,
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "summary": { "type": "string" },
+        "strengths": { "type": "array", "items": { "type": "string" } },
+        "concerns": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["discoveredAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "discoveredAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "expiresAt": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/interview.schema.json",
+  "title": "RoleAxis Interview",
+  "type": "object",
+  "required": ["schemaVersion", "interviewId", "applicationId", "jobId", "status", "schedule", "prep", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0.0" },
+    "interviewId": { "type": "string" },
+    "applicationId": { "type": "string" },
+    "jobId": { "type": "string" },
+    "status": { "enum": ["scheduled", "needs_scheduling", "completed", "follow_up_sent", "offer", "rejected", "closed"] },
+    "schedule": {
+      "type": "object",
+      "required": ["format"],
+      "additionalProperties": false,
+      "properties": {
+        "startsAt": { "type": ["string", "null"] },
+        "format": { "enum": ["phone", "video", "onsite", "assessment", "unknown"] },
+        "locationOrUrl": { "type": "string" },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "title": { "type": "string" },
+              "email": { "type": "string" },
+              "phone": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "prep": {
+      "type": "object",
+      "required": ["focusAreas", "practiceQuestions", "userNotes", "followUpDrafts"],
+      "additionalProperties": false,
+      "properties": {
+        "focusAreas": { "type": "array", "items": { "type": "string" } },
+        "practiceQuestions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["question", "basis"],
+            "additionalProperties": false,
+            "properties": {
+              "question": { "type": "string" },
+              "basis": { "type": "string" },
+              "userResponse": { "type": "string" },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "userNotes": { "type": "array", "items": { "type": "string" } },
+        "followUpDrafts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["createdAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  }
+}
+
