@@ -83,6 +83,17 @@ Phase One foundation documents live in [docs/foundation](docs/foundation):
 - [Product Roadmap](docs/foundation/PRODUCT_ROADMAP.md)
 - [UX Architecture](docs/foundation/UX_ARCHITECTURE.md)
 
+## Development
+
+RoleAxis currently runs as a Vite React application backed by checked-in foundation templates. The temporary file-backed data layer keeps the application DB-ready without forcing the database decision before the product foundation is right.
+
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm preview
+```
+
 ## Repository Status
 
-RoleAxis is in its foundation stage. The current repository establishes the product direction, quality bar, build rules, brand assets, and development standards before application implementation begins.
+RoleAxis has completed the foundation stage and now includes the Phase Two application shell. The current repository establishes the product direction, quality bar, build rules, brand assets, data contracts, and the first workflow-led user experience.

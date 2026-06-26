@@ -5,6 +5,7 @@ build/
 .cache/
 .tmp/
 tmp/
+*.tsbuildinfo
 
 # Environment and machine-specific settings
 .env
@@ -31,4 +32,3 @@ generated-documents/
 Thumbs.db
 .idea/
 .vscode/
-
