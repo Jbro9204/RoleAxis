@@ -6,6 +6,8 @@
 
 **Your job search, aligned and automated.**
 
+When applying feels like too much, RoleAxis helps carry the process.
+
 RoleAxis is a premium job-search automation platform for managing the full path from resume intake to submitted applications and interview preparation. It is built around a simple idea: job searching should feel organized, strategic, and controlled instead of repetitive and overwhelming.
 
 RoleAxis combines a conversational control surface with structured workflow pages so users can define their goals, approve sensitive decisions, and let the system handle the operational work of finding, preparing, submitting, and tracking applications.
@@ -27,6 +29,8 @@ RoleAxis combines a conversational control surface with structured workflow page
 ## Product Standard
 
 RoleAxis is automation-first and conversation-controlled. The product should feel like a real job-search command center, not a generic dashboard.
+
+RoleAxis exists to help people regain control of the job search. Every workflow should reduce overwhelm, protect user dignity, increase clarity, and move the user toward meaningful employment without compromising truth, privacy, or trust.
 
 Every workflow must be usable, traceable, and polished. No placeholder actions, fake integrations, dead buttons, weak visual states, or incomplete pages should be treated as finished work.
 

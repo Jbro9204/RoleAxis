@@ -4,6 +4,8 @@ RoleAxis must feel like a premium job-search operations product. It must not loo
 
 The user experience is workflow-led: each page exists because it supports a real stage of the job campaign.
 
+When applying feels like too much, RoleAxis helps carry the process. The interface should reduce emotional load, keep decisions manageable, and make the user feel supported without hiding important details.
+
 ## Navigation Model
 
 RoleAxis uses a command-center model:
@@ -184,4 +186,5 @@ Required content:
 - Blocked questions must preserve the exact original question.
 - The system must never hide why it paused.
 - The user should always know what has been found, prepared, submitted, and blocked.
-
+- Rejections and skipped opportunities should be treated as campaign data, not user failure.
+- Next steps should be specific, calm, and achievable.

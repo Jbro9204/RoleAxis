@@ -12,8 +12,26 @@ This guide is the standard for every build decision. If a feature conflicts with
 - User feeling: calm, capable, organized, and in command.
 - Visual cues: axis, compass, signal, trajectory, review desk, application record, and campaign progress.
 - Tone: precise, confident, private, direct, and useful.
+- Mission line: When applying feels like too much, RoleAxis helps carry the process.
 
 RoleAxis must feel like a serious paid product. It should not feel like a template, prototype, generic admin panel, or novelty tool.
+
+## Human Impact Standard
+
+RoleAxis exists to help people regain control of the job search. Every workflow should reduce overwhelm, protect user dignity, increase clarity, and move the user toward meaningful employment without compromising truth, privacy, or trust.
+
+Product decisions must treat job searching as emotionally demanding, repetitive, and high stakes. RoleAxis should make the user feel supported and capable, not judged, rushed, or reduced to a metric.
+
+Required behavior:
+
+- Treat rejections, skips, and blocked applications as workflow information, not personal failure.
+- Explain why the system matched, paused, skipped, changed, or recommended something.
+- Keep next steps clear and manageable.
+- Reduce repetitive effort without hiding important decisions.
+- Make sensitive questions feel controlled and respectful.
+- Keep user language calm, direct, and reassuring.
+- Prioritize meaningful employment outcomes over empty application volume.
+- Design for users who are tired, stressed, or discouraged.
 
 ## Core Product
 
