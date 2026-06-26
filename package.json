@@ -7,18 +7,27 @@
     "dev": "vite --host 127.0.0.1 --configLoader native",
     "build": "tsc -b && vite build --configLoader native",
     "preview": "vite preview --host 127.0.0.1 --configLoader native",
-    "check": "tsc -b"
+    "check": "tsc -b",
+    "test": "vitest run",
+    "qa:visual": "node scripts/visual-qa.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/manrope": "^5.2.8",
+    "@fontsource-variable/newsreader": "^5.2.10",
+    "fflate": "^0.8.3",
     "lucide-react": "^0.468.0",
+    "pdfjs-dist": "^6.0.227",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.1.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "axe-core": "^4.12.1",
+    "playwright-core": "^1.61.1",
     "typescript": "^5.9.3",
-    "vite": "^7.2.7"
+    "vite": "^7.2.7",
+    "vitest": "^4.1.9"
   }
 }

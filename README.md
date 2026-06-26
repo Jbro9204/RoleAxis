@@ -85,7 +85,15 @@ Phase One foundation documents live in [docs/foundation](docs/foundation):
 
 ## Development
 
-RoleAxis currently runs as a Vite React application backed by checked-in foundation templates. The temporary file-backed data layer keeps the application DB-ready without forcing the database decision before the product foundation is right.
+RoleAxis runs as a Vite React application backed by checked-in foundation templates and explicit product data contracts. The current launch slice includes:
+
+- Local PDF, DOCX, TXT, and Markdown resume text extraction.
+- A truth-profile review where every extracted fact begins unapproved.
+- Guided intake with answer source, sensitivity, risk, approval, and reuse metadata.
+- An encrypted browser-local campaign draft.
+- Command, rules, privacy, loading, error, blocked, and empty states.
+
+The original resume file is processed in the browser and is not retained in the campaign draft. No job source, portal, account-creation, or submission integration is presented as active before it has an end-to-end verified implementation.
 
 ```bash
 pnpm install
@@ -96,4 +104,4 @@ pnpm preview
 
 ## Repository Status
 
-RoleAxis has completed the foundation stage and now includes the Phase Two application shell. The current repository establishes the product direction, quality bar, build rules, brand assets, data contracts, and the first workflow-led user experience.
+RoleAxis has completed the foundation stage and now contains the first Phase Three vertical slice: resume intake, truth confirmation, campaign calibration, and command-state handoff. Later campaign stages remain visible as integrity gates with their exact prerequisites; they do not claim operational integrations that are not connected yet.

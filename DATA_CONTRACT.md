@@ -65,3 +65,16 @@ Unknown, unsupported, sensitive, legal, medical, demographic, background, milita
 - Do not store portal passwords in application records.
 - Do not add new product data shapes without updating the relevant schema.
 - Do not build UI controls that save data unless the save path is represented in this contract.
+
+## Browser-Local Draft Adapter
+
+The launch and intake workflow uses an encrypted browser-local draft before a production account and database boundary exist.
+
+- Resume bytes and extracted source text are not retained after local processing.
+- Confirmed profile facts, intake answers, approval metadata, and campaign state are encrypted before being written to IndexedDB.
+- The local encryption key is non-extractable and scoped to the browser workspace.
+- The draft adapter does not provide multi-user authentication, synchronization, or backup and must not be represented as a production credential vault.
+- Portal passwords, security answers, recovery codes, tokens, and MFA secrets are not accepted by this adapter.
+- Clearing the local campaign removes the encrypted draft from the browser.
+
+The browser-local record is a campaign draft, not a replacement for the profile, application, interview, or vault contracts. Production storage must preserve those contracts behind an authenticated service boundary.

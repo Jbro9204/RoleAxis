@@ -1,0 +1,90 @@
+import { ArrowRight, Check, Circle, ClipboardCheck, Compass, FileSearch, LockKeyhole, Radar, ShieldCheck, Sparkles } from "lucide-react";
+import { intakeSections } from "../data";
+import type { AppView, CampaignDraft } from "../types";
+
+function nextAction(campaign: CampaignDraft) {
+  if (!campaign.resume) return { title: "Create your truth profile", detail: "Start with a resume. The original file stays in this browser and is discarded after extraction.", action: "Add resume", view: "launch" as AppView };
+  if (campaign.status === "profile_review") return { title: "Confirm the extracted facts", detail: "Every included fact needs your approval before it can shape a search or application.", action: "Review profile", view: "launch" as AppView };
+  if (campaign.status === "intake_in_progress") return { title: "Finish campaign calibration", detail: "Complete your search targets, eligibility, sensitive-answer rules, and submission boundary.", action: "Continue setup", view: "intake" as AppView };
+  return { title: "Review discovery connections", detail: "Your campaign rules are ready. The next phase is connecting verified job sources and testing match quality.", action: "Open discovery", view: "search" as AppView };
+}
+
+export function CommandCenter({ campaign, onNavigate }: { campaign: CampaignDraft; onNavigate: (view: AppView) => void }) {
+  const action = nextAction(campaign);
+  const allQuestions = intakeSections.flatMap((section) => section.questions);
+  const configuredAnswers = allQuestions.filter((question) => campaign.answers[question.key]?.approved).length;
+  const includedFacts = campaign.resume?.facts.filter((fact) => fact.included) ?? [];
+  const verifiedFacts = includedFacts.filter((fact) => fact.verified);
+  const ready = campaign.status === "ready";
+
+  const stages = [
+    { label: "Truth profile", detail: campaign.resume ? `${verifiedFacts.length}/${includedFacts.length} facts verified` : "Resume required", complete: includedFacts.length > 0 && verifiedFacts.length === includedFacts.length, icon: ShieldCheck },
+    { label: "Campaign rules", detail: `${configuredAnswers}/${allQuestions.length} answers configured`, complete: configuredAnswers === allQuestions.length, icon: Compass },
+    { label: "Discovery", detail: ready ? "Connections not configured" : "Waiting on setup", complete: false, icon: Radar },
+    { label: "Review", detail: "No candidates prepared", complete: false, icon: ClipboardCheck },
+    { label: "Outcomes", detail: "No application activity", complete: false, icon: Sparkles }
+  ];
+
+  return (
+    <div className="commandCenter pageEntrance">
+      <section className="commandOpening">
+        <div className="commandIntro">
+          <span className="sectionKicker">Campaign command</span>
+          <h1>{ready ? "Your campaign is calibrated." : "Build the foundation once. Move with clarity after."}</h1>
+          <p>{ready ? "The truth profile and operating boundaries are in place. Discovery remains intentionally quiet until sources are connected and verified." : "RoleAxis is keeping later stages closed until the information needed to act safely is complete."}</p>
+        </div>
+        <div className="modeSeal">
+          <span>Operating mode</span>
+          <strong>{campaign.automationMode.replaceAll("_", " ")}</strong>
+          <em>{campaign.automationMode === "approval_required" ? "Every final submission returns to you." : "The configured rule set controls every action."}</em>
+          <button type="button" className="textButton" onClick={() => onNavigate("rules")}>Inspect boundaries <ArrowRight size={14} aria-hidden="true" /></button>
+        </div>
+      </section>
+
+      <section className="operatingAxis" aria-labelledby="axis-heading">
+        <div className="axisHeader">
+          <div><span className="sectionKicker">Operating axis</span><h2 id="axis-heading">One campaign. Five accountable stages.</h2></div>
+          <span className={`readinessFlag ${ready ? "ready" : "building"}`}>{ready ? <Check size={14} aria-hidden="true" /> : <Circle size={14} aria-hidden="true" />}{ready ? "Setup complete" : "Setup in progress"}</span>
+        </div>
+        <div className="axisTrack">
+          {stages.map((stage, index) => {
+            const Icon = stage.icon;
+            return (
+              <div key={stage.label} className={`axisStage ${stage.complete ? "complete" : ""}`}>
+                <div className="axisNode"><Icon size={19} aria-hidden="true" /></div>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{stage.label}</strong>
+                <p>{stage.detail}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="commandLowerDeck">
+        <section className="nextActionDesk">
+          <div className="deskMarker"><Compass size={21} aria-hidden="true" /></div>
+          <div>
+            <span className="sectionKicker">Next deliberate move</span>
+            <h2>{action.title}</h2>
+            <p>{action.detail}</p>
+          </div>
+          <button className="actionButton primary" type="button" onClick={() => onNavigate(action.view)}>{action.action}<ArrowRight size={16} aria-hidden="true" /></button>
+        </section>
+
+        <section className="activityLedger" aria-labelledby="activity-heading">
+          <div className="ledgerHeading"><div><span className="sectionKicker">Today’s record</span><h2 id="activity-heading">Quiet by design.</h2></div><FileSearch size={22} aria-hidden="true" /></div>
+          <div className="emptyActivity">
+            <span className="emptyActivityIcon"><LockKeyhole size={20} aria-hidden="true" /></span>
+            <div><strong>No automated activity has run.</strong><p>Searches, prepared applications, approvals, and submissions will appear here with timestamps and reasons.</p></div>
+          </div>
+          <div className="activitySummary">
+            <span><b>0</b> roles found</span>
+            <span><b>0</b> awaiting review</span>
+            <span><b>0</b> submitted</span>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
