@@ -7,8 +7,17 @@
       "defaultRiskLevel": "low",
       "defaultAutomationMode": "safe_auto",
       "sensitivity": "personal",
-      "examplePrompts": ["Legal name", "Preferred name", "Email address", "Phone number"],
-      "notes": "Use verified profile contact fields."
+      "examplePrompts": ["Legal name", "Preferred name", "Former name"],
+      "notes": "Use verified profile fields."
+    },
+    {
+      "key": "contact",
+      "label": "Contact",
+      "defaultRiskLevel": "low",
+      "defaultAutomationMode": "safe_auto",
+      "sensitivity": "personal",
+      "examplePrompts": ["Email address", "Phone number", "Current address"],
+      "notes": "Use confirmed application contact details."
     },
     {
       "key": "work_authorization",
@@ -16,7 +25,7 @@
       "defaultRiskLevel": "high",
       "defaultAutomationMode": "ask_once",
       "sensitivity": "sensitive",
-      "examplePrompts": ["Are you authorized to work in the United States?", "Can you provide proof of employment eligibility?"],
+      "examplePrompts": ["Are you legally authorized to work?", "Can you provide proof of employment eligibility?"],
       "notes": "Ask explicitly during intake. Do not infer."
     },
     {
@@ -29,22 +38,130 @@
       "notes": "Ask explicitly during intake. Do not infer."
     },
     {
+      "key": "citizenship",
+      "label": "Citizenship",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "manual_only",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Are you a citizen?", "Are you a lawful permanent resident?"],
+      "notes": "Use only when required or explicitly configured."
+    },
+    {
+      "key": "compensation",
+      "label": "Compensation",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Desired salary", "Minimum hourly rate", "Expected compensation"],
+      "notes": "Use configured compensation strategy. Salary history is manual only."
+    },
+    {
+      "key": "availability",
+      "label": "Availability",
+      "defaultRiskLevel": "medium",
+      "defaultAutomationMode": "ask_once",
+      "sensitivity": "personal",
+      "examplePrompts": ["Earliest start date", "Notice period", "Available shifts"],
+      "notes": "Use approved scheduling preferences."
+    },
+    {
+      "key": "location",
+      "label": "Location And Travel",
+      "defaultRiskLevel": "medium",
+      "defaultAutomationMode": "ask_once",
+      "sensitivity": "personal",
+      "examplePrompts": ["Are you willing to relocate?", "Are you willing to travel?", "Preferred work location"],
+      "notes": "Apply campaign location and travel rules."
+    },
+    {
+      "key": "education",
+      "label": "Education",
+      "defaultRiskLevel": "low",
+      "defaultAutomationMode": "safe_auto",
+      "sensitivity": "personal",
+      "examplePrompts": ["Highest level of education", "Degree", "Institution"],
+      "notes": "Use verified education facts only."
+    },
+    {
+      "key": "experience",
+      "label": "Experience",
+      "defaultRiskLevel": "medium",
+      "defaultAutomationMode": "safe_auto",
+      "sensitivity": "personal",
+      "examplePrompts": ["Years of experience", "Experience with a tool", "Leadership experience"],
+      "notes": "Use verified or conservatively calculated experience only."
+    },
+    {
+      "key": "certification",
+      "label": "Certification",
+      "defaultRiskLevel": "medium",
+      "defaultAutomationMode": "safe_auto",
+      "sensitivity": "personal",
+      "examplePrompts": ["Do you hold this certification?", "Certification expiration date"],
+      "notes": "Never claim unverified credentials."
+    },
+    {
+      "key": "license",
+      "label": "License",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Driver's license", "CDL", "Professional license"],
+      "notes": "Use verified active status only."
+    },
+    {
+      "key": "physical_requirement",
+      "label": "Physical Requirement",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Can you lift 50 pounds?", "Can you stand for long periods?", "Can you perform essential duties with or without accommodation?"],
+      "notes": "Pause unless explicitly configured."
+    },
+    {
+      "key": "drug_testing",
+      "label": "Drug Testing",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Are you willing to complete a drug screen?", "Can you pass a drug test?"],
+      "notes": "Use explicit user preference only."
+    },
+    {
+      "key": "background",
+      "label": "Background And Consumer Reports",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Authorize background check", "Authorize consumer report", "Driving record check"],
+      "notes": "Consent questions require clear user approval."
+    },
+    {
+      "key": "criminal_history",
+      "label": "Criminal History",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "manual_only",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Conviction history", "Pending charges", "Felony conviction"],
+      "notes": "Jurisdiction-sensitive. Do not automate by default."
+    },
+    {
       "key": "military",
-      "label": "Military and Veteran Status",
+      "label": "Military And Veteran Status",
       "defaultRiskLevel": "restricted",
       "defaultAutomationMode": "review_before_submit",
       "sensitivity": "sensitive",
       "examplePrompts": ["Voluntary protected veteran status", "Veteran self-identification", "Military spouse status"],
-      "notes": "Voluntary and sensitive. Never infer from resume."
+      "notes": "Voluntary and sensitive. Never infer."
     },
     {
       "key": "disability",
-      "label": "Disability and Accommodation",
+      "label": "Disability And Accommodation",
       "defaultRiskLevel": "restricted",
       "defaultAutomationMode": "review_before_submit",
       "sensitivity": "sensitive",
-      "examplePrompts": ["Voluntary disability self-identification", "Can you perform the essential functions with or without accommodation?"],
-      "notes": "Voluntary and sensitive. Never infer from resume. Accommodation questions may require manual review."
+      "examplePrompts": ["Voluntary disability self-identification", "Accommodation request"],
+      "notes": "Voluntary and sensitive. Never infer."
     },
     {
       "key": "demographic",
@@ -53,25 +170,52 @@
       "defaultAutomationMode": "review_before_submit",
       "sensitivity": "sensitive",
       "examplePrompts": ["Race or ethnicity", "Gender", "Voluntary self-identification"],
-      "notes": "Do not infer. Use only configured user preference."
+      "notes": "Use only configured user preference."
     },
     {
-      "key": "background",
-      "label": "Background and Criminal History",
-      "defaultRiskLevel": "restricted",
-      "defaultAutomationMode": "manual_only",
-      "sensitivity": "sensitive",
-      "examplePrompts": ["Are you willing to submit to a background check?", "Have you been convicted of a felony?"],
-      "notes": "Legal sensitivity varies by jurisdiction. Prefer manual review."
-    },
-    {
-      "key": "compensation",
-      "label": "Compensation",
+      "key": "reference",
+      "label": "References",
       "defaultRiskLevel": "high",
       "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "personal",
+      "examplePrompts": ["Reference name", "Reference email", "Reference relationship"],
+      "notes": "Submit only approved references."
+    },
+    {
+      "key": "assessment",
+      "label": "Assessment",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "manual_only",
       "sensitivity": "sensitive",
-      "examplePrompts": ["Desired salary", "Minimum hourly rate", "Salary expectations"],
-      "notes": "Use configured range. Salary history questions require special handling."
+      "examplePrompts": ["Skills test", "Personality assessment", "Work simulation"],
+      "notes": "Treat as a separate workflow. Do not fabricate."
+    },
+    {
+      "key": "custom_written",
+      "label": "Custom Written Answer",
+      "defaultRiskLevel": "medium",
+      "defaultAutomationMode": "review_before_submit",
+      "sensitivity": "internal",
+      "examplePrompts": ["Why do you want this job?", "Describe a challenge", "Tell us about your experience"],
+      "notes": "Draft from verified facts and require review by default."
+    },
+    {
+      "key": "account_creation",
+      "label": "Account Creation",
+      "defaultRiskLevel": "high",
+      "defaultAutomationMode": "ask_once",
+      "sensitivity": "sensitive",
+      "examplePrompts": ["Create an account", "Set a password", "Verify email"],
+      "notes": "Use configured account rules and vault references."
+    },
+    {
+      "key": "security_question",
+      "label": "Security Question",
+      "defaultRiskLevel": "restricted",
+      "defaultAutomationMode": "manual_only",
+      "sensitivity": "secret",
+      "examplePrompts": ["Recovery question", "MFA backup code", "Security answer"],
+      "notes": "Store only through the vault boundary."
     },
     {
       "key": "attestation",
@@ -79,8 +223,8 @@
       "defaultRiskLevel": "restricted",
       "defaultAutomationMode": "manual_only",
       "sensitivity": "sensitive",
-      "examplePrompts": ["I certify that my answers are true", "Electronic signature", "I agree to the terms"],
-      "notes": "Do not auto-submit unless user rules explicitly allow it."
+      "examplePrompts": ["I certify this is true", "Electronic signature", "I agree to the terms"],
+      "notes": "Do not submit unless final submission rules explicitly allow it."
     }
   ]
 }

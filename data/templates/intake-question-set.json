@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "sections": [
+    {
+      "key": "identity_contact",
+      "label": "Identity And Contact",
+      "questions": [
+        { "key": "contact.legal_name", "category": "identity", "riskLevel": "low", "automationMode": "safe_auto", "sensitivity": "personal", "prompt": "What legal name should applications use?" },
+        { "key": "contact.preferred_name", "category": "identity", "riskLevel": "low", "automationMode": "safe_auto", "sensitivity": "personal", "prompt": "Do you want to use a preferred name anywhere applications allow it?" },
+        { "key": "contact.application_email", "category": "contact", "riskLevel": "low", "automationMode": "safe_auto", "sensitivity": "personal", "prompt": "What email address should RoleAxis use for applications?" },
+        { "key": "contact.phone", "category": "contact", "riskLevel": "low", "automationMode": "safe_auto", "sensitivity": "personal", "prompt": "What phone number should applications use?" },
+        { "key": "contact.address", "category": "contact", "riskLevel": "low", "automationMode": "safe_auto", "sensitivity": "personal", "prompt": "What address should applications use?" }
+      ]
+    },
+    {
+      "key": "campaign_targets",
+      "label": "Campaign Targets",
+      "questions": [
+        { "key": "search.target_titles", "category": "job_targets", "riskLevel": "low", "automationMode": "safe_auto", "sensitivity": "internal", "prompt": "What job titles should RoleAxis search for?" },
+        { "key": "search.locations", "category": "location", "riskLevel": "medium", "automationMode": "ask_once", "sensitivity": "personal", "prompt": "Where should RoleAxis search?" },
+        { "key": "search.remote_preference", "category": "location", "riskLevel": "medium", "automationMode": "ask_once", "sensitivity": "personal", "prompt": "Do you want remote, hybrid, onsite, or any?" },
+        { "key": "search.minimum_compensation", "category": "compensation", "riskLevel": "high", "automationMode": "review_before_submit", "sensitivity": "sensitive", "prompt": "What is your minimum acceptable pay?" },
+        { "key": "search.schedule", "category": "availability", "riskLevel": "medium", "automationMode": "ask_once", "sensitivity": "personal", "prompt": "What schedules or shifts are acceptable?" }
+      ]
+    },
+    {
+      "key": "eligibility",
+      "label": "Eligibility",
+      "questions": [
+        { "key": "work_authorization.us_authorized", "category": "work_authorization", "riskLevel": "high", "automationMode": "ask_once", "sensitivity": "sensitive", "prompt": "Are you legally authorized to work in the United States?" },
+        { "key": "sponsorship.requires_now_or_future", "category": "sponsorship", "riskLevel": "high", "automationMode": "ask_once", "sensitivity": "sensitive", "prompt": "Will you now or in the future require employer sponsorship?" },
+        { "key": "eligibility.minimum_age", "category": "minimum_age", "riskLevel": "high", "automationMode": "ask_once", "sensitivity": "sensitive", "prompt": "Can RoleAxis answer minimum age eligibility questions for jobs that require them?" },
+        { "key": "eligibility.licenses", "category": "license", "riskLevel": "high", "automationMode": "ask_once", "sensitivity": "sensitive", "prompt": "Which licenses can RoleAxis truthfully claim for you?" }
+      ]
+    },
+    {
+      "key": "sensitive_responses",
+      "label": "Sensitive And Voluntary Responses",
+      "questions": [
+        { "key": "military.protected_veteran_response", "category": "military", "riskLevel": "restricted", "automationMode": "review_before_submit", "sensitivity": "sensitive", "prompt": "How should RoleAxis handle voluntary protected veteran questions?" },
+        { "key": "disability.self_identification_response", "category": "disability", "riskLevel": "restricted", "automationMode": "review_before_submit", "sensitivity": "sensitive", "prompt": "How should RoleAxis handle voluntary disability self-identification questions?" },
+        { "key": "demographic.response_preferences", "category": "demographic", "riskLevel": "restricted", "automationMode": "review_before_submit", "sensitivity": "sensitive", "prompt": "How should RoleAxis handle voluntary demographic questions?" },
+        { "key": "background.criminal_history_rule", "category": "criminal_history", "riskLevel": "restricted", "automationMode": "manual_only", "sensitivity": "sensitive", "prompt": "How should RoleAxis handle criminal-history questions?" },
+        { "key": "background.consumer_report_consent", "category": "background", "riskLevel": "restricted", "automationMode": "review_before_submit", "sensitivity": "sensitive", "prompt": "How should RoleAxis handle background-check or consumer-report consent questions?" }
+      ]
+    },
+    {
+      "key": "account_and_submit",
+      "label": "Accounts And Submission",
+      "questions": [
+        { "key": "account_creation.allow_portal_accounts", "category": "account_creation", "riskLevel": "high", "automationMode": "ask_once", "sensitivity": "sensitive", "prompt": "May RoleAxis create job portal accounts when needed?" },
+        { "key": "account_creation.allowed_portals", "category": "account_creation", "riskLevel": "high", "automationMode": "ask_once", "sensitivity": "sensitive", "prompt": "Are there portals where account creation is allowed or blocked?" },
+        { "key": "submission.automation_mode", "category": "attestation", "riskLevel": "restricted", "automationMode": "manual_only", "sensitivity": "sensitive", "prompt": "What automation mode should RoleAxis use?" },
+        { "key": "submission.final_attestation_rule", "category": "attestation", "riskLevel": "restricted", "automationMode": "manual_only", "sensitivity": "sensitive", "prompt": "When may RoleAxis submit final attestations on your behalf?" }
+      ]
+    }
+  ]
+}

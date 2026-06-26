@@ -68,7 +68,17 @@ That guide defines:
 - Technical boundaries.
 - Definition of done.
 
+## Foundation Documents
+
+Phase One foundation documents live in [docs/foundation](docs/foundation):
+
+- [Research Sources](docs/foundation/RESEARCH_SOURCES.md)
+- [Application Question Library](docs/foundation/APPLICATION_QUESTION_LIBRARY.md)
+- [Intake Schema](docs/foundation/INTAKE_SCHEMA.md)
+- [Automation Rules](docs/foundation/AUTOMATION_RULES.md)
+- [Product Roadmap](docs/foundation/PRODUCT_ROADMAP.md)
+- [UX Architecture](docs/foundation/UX_ARCHITECTURE.md)
+
 ## Repository Status
 
 RoleAxis is in its foundation stage. The current repository establishes the product direction, quality bar, build rules, brand assets, and development standards before application implementation begins.
-

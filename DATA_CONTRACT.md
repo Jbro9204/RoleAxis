@@ -9,7 +9,7 @@ The repository may contain schemas, safe templates, and non-sensitive examples. 
 Tracked:
 
 - `data/schemas/`: JSON schemas that define product data shapes.
-- `data/templates/`: safe starter records without real personal information.
+- `data/templates/`: safe starter records, question sets, and library data without real personal information.
 - `local-data/.gitkeep`: keeps the local data folder available without tracking its contents.
 
 Ignored:
@@ -25,6 +25,7 @@ The file-backed structures should later map to database tables without changing 
 - `profile` maps to users, profiles, work history, education, certifications, skills, links, and truth rules.
 - `intake` maps to intake sessions, intake answers, sensitive answer preferences, and approval defaults.
 - `automation-rules` maps to search rules, approval rules, submit rules, source controls, and daily limits.
+- `intake-question-set` maps to the guided intake prompts shown before any application automation begins.
 - `job` maps to discovered jobs, sources, extracted requirements, match records, and review state.
 - `application` maps to application records, submitted answers, documents used, portal account references, confirmations, and status history.
 - `interview` maps to interview records, prep notes, practice sessions, follow-ups, and outcomes.
@@ -64,4 +65,3 @@ Unknown, unsupported, sensitive, legal, medical, demographic, background, milita
 - Do not store portal passwords in application records.
 - Do not add new product data shapes without updating the relevant schema.
 - Do not build UI controls that save data unless the save path is represented in this contract.
-
