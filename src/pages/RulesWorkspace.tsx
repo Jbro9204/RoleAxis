@@ -112,6 +112,16 @@ export function RulesWorkspace({
             );
           })}
         </div>
+        <div className="thresholdDeck">
+          <label className="scoreThreshold">
+            <span><strong>Review threshold</strong><em>Roles at or above this evidence score can be recommended for review.</em></span>
+            <div><input type="range" min="40" max="100" step="1" value={campaign.matchThreshold} onChange={(event) => updateCampaign((current) => ({ ...current, matchThreshold: Number(event.target.value) }))} aria-label="Minimum match score for review" /><output>{campaign.matchThreshold}</output></div>
+          </label>
+          <label className="dailyLimit">
+            <span><strong>Daily application ceiling</strong><em>A future runner may never exceed this limit.</em></span>
+            <div><input type="number" min="0" max="100" value={campaign.dailyApplicationLimit} onChange={(event) => updateCampaign((current) => ({ ...current, dailyApplicationLimit: Math.min(100, Math.max(0, Number(event.target.value))) }))} /><span>per day</span></div>
+          </label>
+        </div>
       </section>
 
       <div className="rulesLowerDeck">

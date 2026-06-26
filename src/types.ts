@@ -10,7 +10,8 @@ export type AppView =
   | "documents"
   | "vault"
   | "interviews"
-  | "rules";
+  | "rules"
+  | "dossier";
 
 export type NavigationItem = {
   key: AppView;
@@ -99,14 +100,94 @@ export type IntakeAnswer = {
 
 export type CampaignStatus = "not_started" | "profile_review" | "intake_in_progress" | "ready";
 
-export type CampaignDraft = {
+export type JobRemoteType = "remote" | "hybrid" | "onsite" | "unknown";
+export type JobStatus = "found" | "review_queue" | "saved" | "skipped" | "applied" | "interviewing" | "closed";
+export type JobOutcome = "apply_now" | "prepare_for_review" | "ask_user" | "save_for_later" | "skip" | "blocked";
+
+export type JobSource = {
+  name: string;
+  url: string;
+  externalId: string;
+  portalType: string;
+  importMethod: "manual";
+};
+
+export type JobSalary = {
+  minimum: number | null;
+  maximum: number | null;
+  currency: string;
+  period: "hour" | "year" | "month" | "week" | "unknown";
+  rawText: string;
+};
+
+export type MatchDimension = {
+  key: "title" | "skills" | "location" | "compensation" | "requirements";
+  label: string;
+  score: number;
+  maximum: number;
+  summary: string;
+};
+
+export type JobMatch = {
+  score: number;
+  summary: string;
+  strengths: string[];
+  concerns: string[];
+  breakdown: MatchDimension[];
+};
+
+export type JobRecord = {
   schemaVersion: "1.0.0";
+  jobId: string;
+  fingerprint: string;
+  source: JobSource;
+  company: string;
+  title: string;
+  location: string;
+  remoteType: JobRemoteType;
+  salary: JobSalary;
+  description: string;
+  requirements: string[];
+  preferredQualifications: string[];
+  keywords: string[];
+  status: JobStatus;
+  outcome: JobOutcome;
+  match: JobMatch;
+  review: {
+    decisionReason: string | null;
+    decidedAt: string | null;
+  };
+  metadata: {
+    discoveredAt: string;
+    updatedAt: string;
+    expiresAt: string | null;
+  };
+};
+
+export type JobImportInput = {
+  url: string;
+  company: string;
+  title: string;
+  location: string;
+  remoteType: JobRemoteType;
+  salaryMinimum: number | null;
+  salaryMaximum: number | null;
+  salaryPeriod: JobSalary["period"];
+  description: string;
+};
+
+export type CampaignDraft = {
+  schemaVersion: "1.1.0";
   campaignId: string;
   status: CampaignStatus;
   resume: ResumeRecord | null;
   answers: Record<string, IntakeAnswer>;
+  jobs: JobRecord[];
+  selectedJobId: string | null;
   activeSectionKey: string;
   automationMode: "prepare_only" | "approval_required" | "trusted_auto_apply" | "high_volume";
+  matchThreshold: number;
+  dailyApplicationLimit: number;
   createdAt: string;
   updatedAt: string;
 };

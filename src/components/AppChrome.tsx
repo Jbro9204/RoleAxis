@@ -64,6 +64,7 @@ export function AppChrome({
   draftState: DraftState;
   onNavigate: (view: AppView) => void;
 }) {
+  const selectedJob = campaign.jobs.find((job) => job.jobId === campaign.selectedJobId);
   return (
     <div className="applicationFrame">
       <a className="skipLink" href="#workspace-content">Skip to workspace</a>
@@ -75,7 +76,7 @@ export function AppChrome({
         <nav className="campaignRoute" aria-label="Campaign stages">
           {primaryNavigation.map((item, index) => {
             const Icon = item.icon;
-            const selected = activeView === item.key || (item.key === "launch" && activeView === "intake");
+            const selected = activeView === item.key || (item.key === "launch" && activeView === "intake") || (item.key === "search" && activeView === "dossier");
             const locked = item.requiresCampaign && campaign.status !== "ready";
             return (
               <button
@@ -122,7 +123,7 @@ export function AppChrome({
           <Compass size={15} aria-hidden="true" />
           <strong>{campaignLabel(campaign)}</strong>
           <span aria-hidden="true">/</span>
-          <span>{campaign.resume?.fileName ?? "No resume added"}</span>
+          <span>{activeView === "dossier" && selectedJob ? `${selectedJob.company} · ${selectedJob.title}` : campaign.resume?.fileName ?? "No resume added"}</span>
         </div>
         <div>
           <LockKeyhole size={14} aria-hidden="true" />
@@ -144,7 +145,7 @@ export function AppChrome({
       <nav className="mobileNavigation" aria-label="Mobile campaign navigation">
         {primaryNavigation.slice(0, 5).map((item) => {
           const Icon = item.icon;
-          const selected = activeView === item.key || (item.key === "launch" && activeView === "intake");
+          const selected = activeView === item.key || (item.key === "launch" && activeView === "intake") || (item.key === "search" && activeView === "dossier");
           return (
             <button key={item.key} type="button" className={selected ? "selected" : ""} onClick={() => onNavigate(item.key)}>
               <Icon size={19} aria-hidden="true" />

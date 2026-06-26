@@ -6,7 +6,10 @@ function nextAction(campaign: CampaignDraft) {
   if (!campaign.resume) return { title: "Create your truth profile", detail: "Start with a resume. The original file stays in this browser and is discarded after extraction.", action: "Add resume", view: "launch" as AppView };
   if (campaign.status === "profile_review") return { title: "Confirm the extracted facts", detail: "Every included fact needs your approval before it can shape a search or application.", action: "Review profile", view: "launch" as AppView };
   if (campaign.status === "intake_in_progress") return { title: "Finish campaign calibration", detail: "Complete your search targets, eligibility, sensitive-answer rules, and submission boundary.", action: "Continue setup", view: "intake" as AppView };
-  return { title: "Review discovery connections", detail: "Your campaign rules are ready. The next phase is connecting verified job sources and testing match quality.", action: "Open discovery", view: "search" as AppView };
+  const reviewCount = campaign.jobs.filter((job) => job.status === "review_queue").length;
+  if (reviewCount) return { title: `Review ${reviewCount} active candidate${reviewCount === 1 ? "" : "s"}`, detail: "Each dossier is ready for an evidence-led decision. No application action is connected yet.", action: "Open review queue", view: "review" as AppView };
+  if (campaign.jobs.length) return { title: "Compare the current role signal", detail: "Imported roles are normalized, deduplicated, and scored. Open discovery to inspect or add another source.", action: "Open discovery", view: "search" as AppView };
+  return { title: "Import the first verified posting", detail: "Your campaign rules are ready. Add a complete role posting to normalize, deduplicate, and score against confirmed evidence.", action: "Open discovery", view: "search" as AppView };
 }
 
 export function CommandCenter({ campaign, onNavigate }: { campaign: CampaignDraft; onNavigate: (view: AppView) => void }) {
@@ -16,12 +19,14 @@ export function CommandCenter({ campaign, onNavigate }: { campaign: CampaignDraf
   const includedFacts = campaign.resume?.facts.filter((fact) => fact.included) ?? [];
   const verifiedFacts = includedFacts.filter((fact) => fact.verified);
   const ready = campaign.status === "ready";
+  const reviewCount = campaign.jobs.filter((job) => job.status === "review_queue").length;
+  const latestJob = [...campaign.jobs].sort((left, right) => right.metadata.discoveredAt.localeCompare(left.metadata.discoveredAt))[0];
 
   const stages = [
     { label: "Truth profile", detail: campaign.resume ? `${verifiedFacts.length}/${includedFacts.length} facts verified` : "Resume required", complete: includedFacts.length > 0 && verifiedFacts.length === includedFacts.length, icon: ShieldCheck },
     { label: "Campaign rules", detail: `${configuredAnswers}/${allQuestions.length} answers configured`, complete: configuredAnswers === allQuestions.length, icon: Compass },
-    { label: "Discovery", detail: ready ? "Connections not configured" : "Waiting on setup", complete: false, icon: Radar },
-    { label: "Review", detail: "No candidates prepared", complete: false, icon: ClipboardCheck },
+    { label: "Discovery", detail: campaign.jobs.length ? `${campaign.jobs.length} role${campaign.jobs.length === 1 ? "" : "s"} normalized` : ready ? "Ready for manual source" : "Waiting on setup", complete: campaign.jobs.length > 0, icon: Radar },
+    { label: "Review", detail: reviewCount ? `${reviewCount} active decision${reviewCount === 1 ? "" : "s"}` : "No candidates queued", complete: reviewCount > 0, icon: ClipboardCheck },
     { label: "Outcomes", detail: "No application activity", complete: false, icon: Sparkles }
   ];
 
@@ -73,14 +78,14 @@ export function CommandCenter({ campaign, onNavigate }: { campaign: CampaignDraf
         </section>
 
         <section className="activityLedger" aria-labelledby="activity-heading">
-          <div className="ledgerHeading"><div><span className="sectionKicker">Today’s record</span><h2 id="activity-heading">Quiet by design.</h2></div><FileSearch size={22} aria-hidden="true" /></div>
+          <div className="ledgerHeading"><div><span className="sectionKicker">Today’s record</span><h2 id="activity-heading">{latestJob ? "Evidence entered the campaign." : "Quiet by design."}</h2></div><FileSearch size={22} aria-hidden="true" /></div>
           <div className="emptyActivity">
-            <span className="emptyActivityIcon"><LockKeyhole size={20} aria-hidden="true" /></span>
-            <div><strong>No automated activity has run.</strong><p>Searches, prepared applications, approvals, and submissions will appear here with timestamps and reasons.</p></div>
+            <span className="emptyActivityIcon">{latestJob ? <Radar size={20} aria-hidden="true" /> : <LockKeyhole size={20} aria-hidden="true" />}</span>
+            <div><strong>{latestJob ? `${latestJob.company} · ${latestJob.title}` : "No automated activity has run."}</strong><p>{latestJob ? `Manually imported, normalized, and scored ${latestJob.match.score}/100. Source provenance is retained in the dossier.` : "Searches, prepared applications, approvals, and submissions will appear here with timestamps and reasons."}</p></div>
           </div>
           <div className="activitySummary">
-            <span><b>0</b> roles found</span>
-            <span><b>0</b> awaiting review</span>
+            <span><b>{campaign.jobs.length}</b> roles imported</span>
+            <span><b>{reviewCount}</b> awaiting review</span>
             <span><b>0</b> submitted</span>
           </div>
         </section>

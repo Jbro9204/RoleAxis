@@ -3,20 +3,22 @@
   "$id": "https://roleaxis.local/schemas/job.schema.json",
   "title": "RoleAxis Job",
   "type": "object",
-  "required": ["schemaVersion", "jobId", "source", "company", "title", "status", "match", "metadata"],
+  "required": ["schemaVersion", "jobId", "fingerprint", "source", "company", "title", "status", "outcome", "match", "review", "metadata"],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": { "type": "string", "const": "1.0.0" },
     "jobId": { "type": "string" },
+    "fingerprint": { "type": "string" },
     "source": {
       "type": "object",
-      "required": ["name", "url"],
+      "required": ["name", "url", "importMethod"],
       "additionalProperties": false,
       "properties": {
         "name": { "type": "string" },
         "url": { "type": "string" },
         "externalId": { "type": "string" },
-        "portalType": { "type": "string" }
+        "portalType": { "type": "string" },
+        "importMethod": { "enum": ["manual"] }
       }
     },
     "company": { "type": "string" },
@@ -39,15 +41,40 @@
     "preferredQualifications": { "type": "array", "items": { "type": "string" } },
     "keywords": { "type": "array", "items": { "type": "string" } },
     "status": { "enum": ["found", "review_queue", "saved", "skipped", "applied", "interviewing", "closed"] },
+    "outcome": { "enum": ["apply_now", "prepare_for_review", "ask_user", "save_for_later", "skip", "blocked"] },
     "match": {
       "type": "object",
-      "required": ["score", "summary", "strengths", "concerns"],
+      "required": ["score", "summary", "strengths", "concerns", "breakdown"],
       "additionalProperties": false,
       "properties": {
         "score": { "type": "number", "minimum": 0, "maximum": 100 },
         "summary": { "type": "string" },
         "strengths": { "type": "array", "items": { "type": "string" } },
-        "concerns": { "type": "array", "items": { "type": "string" } }
+        "concerns": { "type": "array", "items": { "type": "string" } },
+        "breakdown": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "label", "score", "maximum", "summary"],
+            "additionalProperties": false,
+            "properties": {
+              "key": { "enum": ["title", "skills", "location", "compensation", "requirements"] },
+              "label": { "type": "string" },
+              "score": { "type": "number", "minimum": 0 },
+              "maximum": { "type": "number", "minimum": 0 },
+              "summary": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["decisionReason", "decidedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "decisionReason": { "type": ["string", "null"] },
+        "decidedAt": { "type": ["string", "null"] }
       }
     },
     "metadata": {

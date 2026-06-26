@@ -82,6 +82,7 @@ Phase One foundation documents live in [docs/foundation](docs/foundation):
 - [Automation Rules](docs/foundation/AUTOMATION_RULES.md)
 - [Product Roadmap](docs/foundation/PRODUCT_ROADMAP.md)
 - [UX Architecture](docs/foundation/UX_ARCHITECTURE.md)
+- [Matching Model](docs/foundation/MATCHING_MODEL.md)
 
 ## Development
 
@@ -92,6 +93,9 @@ RoleAxis runs as a Vite React application backed by checked-in foundation templa
 - Guided intake with answer source, sensitivity, risk, approval, and reuse metadata.
 - An encrypted browser-local campaign draft.
 - Command, rules, privacy, loading, error, blocked, and empty states.
+- Manual job-posting import with canonical source provenance and duplicate protection.
+- Deterministic five-dimension matching with visible strengths, concerns, and score anatomy.
+- Job dossiers, review-queue decisions, saved roles, and recorded skip reasons.
 
 The original resume file is processed in the browser and is not retained in the campaign draft. No job source, portal, account-creation, or submission integration is presented as active before it has an end-to-end verified implementation.
 
@@ -104,4 +108,4 @@ pnpm preview
 
 ## Repository Status
 
-RoleAxis has completed the foundation stage and now contains the first Phase Three vertical slice: resume intake, truth confirmation, campaign calibration, and command-state handoff. Later campaign stages remain visible as integrity gates with their exact prerequisites; they do not claim operational integrations that are not connected yet.
+RoleAxis has completed the foundation stage and now contains verified Phase Three and Phase Four vertical slices: resume intake, truth confirmation, campaign calibration, manual job discovery, deterministic matching, job dossiers, and review-queue handoff. Network job sources, document tailoring, portal automation, accounts, submission, and interview operations remain explicit integrity gates until their end-to-end implementations are verified.

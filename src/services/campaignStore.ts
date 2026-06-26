@@ -64,15 +64,31 @@ function generateId() {
 export function createEmptyCampaign(): CampaignDraft {
   const now = new Date().toISOString();
   return {
-    schemaVersion: "1.0.0",
+    schemaVersion: "1.1.0",
     campaignId: generateId(),
     status: "not_started",
     resume: null,
     answers: {},
+    jobs: [],
+    selectedJobId: null,
     activeSectionKey: "identity_contact",
     automationMode: "approval_required",
+    matchThreshold: 80,
+    dailyApplicationLimit: 25,
     createdAt: now,
     updatedAt: now
+  };
+}
+
+function migrateCampaignDraft(stored: CampaignDraft | (Omit<CampaignDraft, "schemaVersion" | "jobs" | "selectedJobId" | "matchThreshold" | "dailyApplicationLimit"> & { schemaVersion: "1.0.0" })):
+  CampaignDraft {
+  return {
+    ...stored,
+    schemaVersion: "1.1.0",
+    jobs: "jobs" in stored && Array.isArray(stored.jobs) ? stored.jobs : [],
+    selectedJobId: "selectedJobId" in stored && typeof stored.selectedJobId === "string" ? stored.selectedJobId : null,
+    matchThreshold: "matchThreshold" in stored && typeof stored.matchThreshold === "number" ? stored.matchThreshold : 80,
+    dailyApplicationLimit: "dailyApplicationLimit" in stored && typeof stored.dailyApplicationLimit === "number" ? stored.dailyApplicationLimit : 25
   };
 }
 
@@ -83,7 +99,7 @@ export async function loadCampaignDraft() {
     if (!stored) return null;
     const key = await getWorkspaceKey(database);
     const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(stored.iv) }, key, stored.ciphertext);
-    return JSON.parse(new TextDecoder().decode(plaintext)) as CampaignDraft;
+    return migrateCampaignDraft(JSON.parse(new TextDecoder().decode(plaintext)) as CampaignDraft);
   } catch {
     throw new Error("The encrypted campaign draft could not be recovered. Your source resume was not retained.");
   } finally {

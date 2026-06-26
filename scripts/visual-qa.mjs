@@ -25,6 +25,24 @@ January 2021 - Present
 EDUCATION
 Bachelor of Science, Business Administration
 Carolina State University`;
+const sampleJob = `Northstar Services is hiring a Senior Operations Manager to lead a growing service operation in Raleigh. This hybrid role owns workforce planning, performance coaching, process improvement, and weekly operating reviews.
+
+Responsibilities
+- Lead frontline managers and improve service performance across a multi-site operation
+- Build workforce plans and capacity forecasts using Excel
+- Establish measurable coaching and process-improvement routines
+
+Requirements
+- Bachelor's degree or equivalent verified experience required
+- Advanced Excel and workforce planning skills
+- 5+ years of operations leadership experience
+
+Preferred Qualifications
+- Process improvement certification preferred
+- Experience supporting distributed teams
+
+Compensation
+$90,000 - $115,000 per year`;
 
 if (!outputDirectory.startsWith(path.resolve(root, "tmp") + path.sep)) {
   throw new Error("Visual QA output must stay inside the repository tmp directory.");
@@ -78,6 +96,23 @@ async function accessibilityAudit(page) {
   }));
 }
 
+async function layoutAudit(page) {
+  return page.evaluate(() => ({
+    viewportWidth: document.documentElement.clientWidth,
+    documentWidth: document.documentElement.scrollWidth,
+    horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    bodyFont: getComputedStyle(document.body).fontFamily
+  }));
+}
+
+async function settleVisual(page) {
+  await page.evaluate(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  await page.waitForTimeout(300);
+}
+
 const report = [];
 let browser;
 
@@ -98,12 +133,7 @@ try {
     await page.goto(appUrl, { waitUntil: "networkidle" });
     await page.waitForTimeout(350);
     await page.screenshot({ path: path.join(outputDirectory, `${target.name}-launch.png`), fullPage: true });
-    const layout = await page.evaluate(() => ({
-      viewportWidth: document.documentElement.clientWidth,
-      documentWidth: document.documentElement.scrollWidth,
-      horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      bodyFont: getComputedStyle(document.body).fontFamily
-    }));
+    const layout = await layoutAudit(page);
     report.push({ ...target, layout, accessibility: await accessibilityAudit(page), consoleErrors });
     await context.close();
   }
@@ -157,6 +187,103 @@ try {
     consoleErrors,
     storageBoundary
   });
+
+  for (let step = 0; step < 28; step += 1) {
+    if (await page.getByRole("heading", { name: /Your campaign is calibrated/i }).count()) break;
+    const questionText = await page.locator(".questionStage h2").textContent();
+    const listInput = page.locator(".listInput input");
+    const choice = page.locator(".choiceOption").first();
+    const multiChoice = page.locator(".multiChoiceField button").first();
+    const textInput = page.locator(".textAnswer input");
+    if (await listInput.count()) {
+      const value = questionText?.includes("job titles") ? "Operations Manager" : questionText?.includes("Where should") ? "Raleigh, NC" : questionText?.includes("licenses") ? "Driver License" : "Greenhouse";
+      await listInput.fill(value);
+      await page.locator(".listInput button").click();
+    } else if (await choice.count()) {
+      await choice.click();
+    } else if (await multiChoice.count()) {
+      await multiChoice.click();
+    } else if (await textInput.count()) {
+      if (!(await textInput.inputValue())) {
+        const value = await textInput.getAttribute("type") === "number" ? "75000" : questionText?.includes("preferred name") ? "Alex" : questionText?.includes("address") ? "Raleigh, NC 27601" : "Confirmed for this test campaign";
+        await textInput.fill(value);
+      }
+    }
+    const continueButton = page.getByRole("button", { name: /Save and continue|Finish calibration/i });
+    await continueButton.click();
+    await page.waitForTimeout(80);
+  }
+
+  await page.getByRole("heading", { name: /Your campaign is calibrated/i }).waitFor();
+  await page.getByRole("button", { name: "Discover", exact: true }).click();
+  await page.getByRole("heading", { name: /Turn a posting into accountable signal/i }).waitFor();
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-discovery-empty.png"), fullPage: true });
+  report.push({ name: "discovery-empty", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+
+  await page.getByRole("button", { name: /Import a role/i }).first().click();
+  await page.getByRole("heading", { name: /Import the posting as published/i }).waitFor();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-import-form.png"), fullPage: true });
+  report.push({ name: "job-import-dialog", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+  await page.getByLabel("Original job URL").fill("https://boards.greenhouse.io/northstar/jobs/12345?utm_source=qa&gh_jid=12345");
+  await page.getByLabel("Company").fill("Northstar Services");
+  await page.getByLabel("Role title").fill("Senior Operations Manager");
+  await page.getByLabel("Listed location").fill("Raleigh, NC");
+  await page.getByLabel("Work arrangement").selectOption("hybrid");
+  await page.getByLabel("Minimum").fill("90000");
+  await page.getByLabel("Maximum").fill("115000");
+  await page.getByLabel("Complete job description").fill(sampleJob);
+  await page.getByRole("button", { name: /Normalize and score/i }).click();
+  await page.getByRole("heading", { name: "Senior Operations Manager" }).waitFor();
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-discovery-result.png"), fullPage: true });
+  report.push({ name: "discovery-result", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+
+  await page.getByRole("button", { name: /Open dossier/i }).click();
+  await page.getByRole("heading", { name: "Senior Operations Manager" }).waitFor();
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-job-dossier.png"), fullPage: true });
+  report.push({ name: "job-dossier-desktop", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+
+  await page.getByRole("button", { name: "Skip role" }).click();
+  await page.getByRole("heading", { name: /Why are you skipping this role/i }).waitFor();
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-skip-dialog.png"), fullPage: true });
+  report.push({ name: "skip-reason-dialog", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+  await page.keyboard.press("Escape");
+  await page.getByRole("heading", { name: /Why are you skipping this role/i }).waitFor({ state: "detached" });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "mobile-job-dossier.png"), fullPage: true });
+  report.push({ name: "job-dossier-mobile", viewport: { width: 390, height: 844 }, layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+  await page.setViewportSize({ width: 1600, height: 1000 });
+
+  await page.getByRole("button", { name: /Send to review/i }).click();
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await page.getByRole("heading", { name: /Decide with the whole record/i }).waitFor();
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-review-queue.png"), fullPage: true });
+  await page.waitForTimeout(450);
+  const jobStorageBoundary = await page.evaluate(async () => {
+    const database = await new Promise((resolve, reject) => {
+      const request = indexedDB.open("roleaxis-private-workspace");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+    });
+    const records = await new Promise((resolve, reject) => {
+      const request = database.transaction("encrypted-drafts", "readonly").objectStore("encrypted-drafts").getAll();
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+    });
+    database.close();
+    const draft = records.find((record) => record.id === "campaign-draft");
+    return {
+      hasEncryptedDraft: draft?.ciphertext instanceof ArrayBuffer,
+      containsPlaintextJob: JSON.stringify(records).includes("Northstar Services")
+    };
+  });
+  report.push({ name: "review-queue", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors, storageBoundary: jobStorageBoundary });
   await context.close();
 
   const failures = report.filter((entry) =>
@@ -164,6 +291,7 @@ try {
     entry.consoleErrors?.length ||
     entry.accessibility?.length ||
     entry.storageBoundary?.containsPlaintextName ||
+    entry.storageBoundary?.containsPlaintextJob ||
     (entry.storageBoundary && !entry.storageBoundary.hasEncryptedDraft)
   );
 
