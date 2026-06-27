@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Bookmark, BriefcaseBusiness, Check, CheckCircle2, CircleAlert, CircleDollarSign, Clock3, ExternalLink, Link2, MapPin, ShieldAlert, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, BriefcaseBusiness, Check, CheckCircle2, CircleAlert, CircleDollarSign, Clock3, ExternalLink, Gauge, Link2, MapPin, ShieldAlert, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { useModalFocus } from "../hooks/useModalFocus";
@@ -16,11 +16,12 @@ const skipReasons = [
 
 function salaryLabel(job: JobRecord) {
   if (job.salary.minimum === null && job.salary.maximum === null) return "Not disclosed";
-  const format = (value: number) => `$${value.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  const format = (value: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: job.salary.currency, maximumFractionDigits: 0 }).format(value);
   return `${job.salary.minimum !== null ? format(job.salary.minimum) : "—"}${job.salary.maximum !== null && job.salary.maximum !== job.salary.minimum ? ` – ${format(job.salary.maximum)}` : ""} / ${job.salary.period}`;
 }
 
 function recommendation(job: JobRecord) {
+  if (job.status === "closed") return { label: "Posting no longer active", detail: "A complete source check no longer found this role. The dossier remains as a campaign record." };
   if (job.status === "review_queue") return { label: "In review queue", detail: "The role is ready for a structured application decision." };
   if (job.status === "saved") return { label: "Saved for comparison", detail: "The record stays available without entering active review." };
   if (job.status === "skipped") return { label: "Skipped by you", detail: job.review.decisionReason ?? "The role is outside the active campaign." };
@@ -80,13 +81,25 @@ export function JobDossier({
     setShowSkipDialog(false);
   }
 
+  function recordMatchFeedback(rating: NonNullable<JobRecord["matchFeedback"]>["rating"]) {
+    const now = new Date().toISOString();
+    updateCampaign((current) => ({
+      ...current,
+      jobs: current.jobs.map((item) => item.jobId === jobId ? {
+        ...item,
+        matchFeedback: { rating, note: "", updatedAt: now },
+        metadata: { ...item.metadata, updatedAt: now }
+      } : item)
+    }));
+  }
+
   return (
     <div className="jobDossier pageEntrance">
       <button className="textButton back" type="button" onClick={() => onNavigate(job.status === "review_queue" ? "review" : "search")}><ArrowLeft size={15} aria-hidden="true" /> Back to {job.status === "review_queue" ? "review" : "discovery"}</button>
 
       <section className="dossierOpening">
         <div className="dossierIdentity">
-          <div className="dossierSource"><ShieldCheck size={15} aria-hidden="true" /><span><strong>{job.source.name}</strong><small>Manual import · source retained</small></span></div>
+          <div className="dossierSource"><ShieldCheck size={15} aria-hidden="true" /><span><strong>{job.source.name}</strong><small>{job.source.importMethod === "public_feed" ? "Verified public feed" : "Manual evidence"} · {job.sources.length} source receipt{job.sources.length === 1 ? "" : "s"}</small></span></div>
           <span className="sectionKicker">Job dossier · {job.fingerprint.toUpperCase()}</span>
           <h1>{job.title}</h1>
           <p className="dossierCompany">{job.company}</p>
@@ -104,6 +117,15 @@ export function JobDossier({
           <button className="actionButton primary" type="button" onClick={() => recordDecision("review_queue", "prepare_for_review", "Moved to review after dossier assessment.")} disabled={job.status === "review_queue"}><SlidersHorizontal size={16} aria-hidden="true" />{job.status === "review_queue" ? "In review queue" : "Send to review"}</button>
           <button className="actionButton secondary" type="button" onClick={() => recordDecision("saved", "save_for_later", "Saved for comparison.")} disabled={job.status === "saved"}><Bookmark size={16} aria-hidden="true" />{job.status === "saved" ? "Saved" : "Save for later"}</button>
           <button className="textButton skipAction" type="button" onClick={() => setShowSkipDialog(true)}>Skip role</button>
+        </div>
+      </section>
+
+      <section className="scoreFeedbackBar" aria-labelledby="score-feedback-heading">
+        <div className="scoreFeedbackLead"><Gauge size={19} aria-hidden="true" /><span><strong id="score-feedback-heading">Does this score match your read?</strong><small>Your judgment stays local and becomes part of the campaign record. It does not silently change the evidence model.</small></span></div>
+        <div className="scoreFeedbackChoices" aria-label="Match score feedback">
+          {[{ value: "too_low", label: "Feels low" }, { value: "accurate", label: "Feels right" }, { value: "too_high", label: "Feels high" }].map((choice) => (
+            <button key={choice.value} type="button" className={job.matchFeedback?.rating === choice.value ? "selected" : ""} onClick={() => recordMatchFeedback(choice.value as NonNullable<JobRecord["matchFeedback"]>["rating"])}>{job.matchFeedback?.rating === choice.value ? <Check size={14} aria-hidden="true" /> : null}{choice.label}</button>
+          ))}
         </div>
       </section>
 
@@ -139,7 +161,7 @@ export function JobDossier({
           <Link2 size={22} aria-hidden="true" />
           <span className="sectionKicker">Source receipt</span>
           <h2>{job.source.name}</h2>
-          <dl><div><dt>Portal classification</dt><dd>{job.source.portalType.replaceAll("_", " ")}</dd></div><div><dt>External ID</dt><dd>{job.source.externalId || "Not detected"}</dd></div><div><dt>Import method</dt><dd>Manual evidence</dd></div><div><dt>Tracking parameters</dt><dd>Removed</dd></div></dl>
+          <dl><div><dt>Source type</dt><dd>{job.source.importMethod === "public_feed" ? "Verified public board" : "Manual evidence"}</dd></div><div><dt>External ID</dt><dd>{job.source.externalId || "Not detected"}</dd></div><div><dt>Source receipts</dt><dd>{job.sources.length}</dd></div><div><dt>Last observed</dt><dd>{new Date(job.source.lastSeenAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</dd></div></dl>
           <a className="sourceLink" href={job.source.url} target="_blank" rel="noreferrer">Open original posting <ExternalLink size={14} aria-hidden="true" /></a>
         </aside>
       </div>

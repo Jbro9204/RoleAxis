@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/source-connection.schema.json",
+  "title": "RoleAxis Source Connection",
+  "type": "object",
+  "required": ["sourceId", "organizationName", "boardUrl", "status", "connectedAt", "lastCheckedAt", "lastSuccessfulRunAt", "lastError"],
+  "additionalProperties": false,
+  "properties": {
+    "sourceId": { "type": "string" },
+    "organizationName": { "type": "string" },
+    "boardUrl": { "type": "string", "format": "uri" },
+    "status": { "enum": ["ready", "attention"] },
+    "connectedAt": { "type": "string", "format": "date-time" },
+    "lastCheckedAt": { "type": ["string", "null"] },
+    "lastSuccessfulRunAt": { "type": ["string", "null"] },
+    "lastError": { "type": ["string", "null"] }
+  }
+}

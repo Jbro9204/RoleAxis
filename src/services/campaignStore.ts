@@ -64,12 +64,14 @@ function generateId() {
 export function createEmptyCampaign(): CampaignDraft {
   const now = new Date().toISOString();
   return {
-    schemaVersion: "1.1.0",
+    schemaVersion: "1.2.0",
     campaignId: generateId(),
     status: "not_started",
     resume: null,
     answers: {},
     jobs: [],
+    sources: [],
+    searchRuns: [],
     selectedJobId: null,
     activeSectionKey: "identity_contact",
     automationMode: "approval_required",
@@ -80,16 +82,42 @@ export function createEmptyCampaign(): CampaignDraft {
   };
 }
 
-function migrateCampaignDraft(stored: CampaignDraft | (Omit<CampaignDraft, "schemaVersion" | "jobs" | "selectedJobId" | "matchThreshold" | "dailyApplicationLimit"> & { schemaVersion: "1.0.0" })):
-  CampaignDraft {
+function migrateCampaignDraft(stored: CampaignDraft | Record<string, unknown>): CampaignDraft {
+  const jobs = Array.isArray(stored.jobs) ? stored.jobs.map((jobValue) => {
+    const job = jobValue as CampaignDraft["jobs"][number] & Record<string, unknown>;
+    const now = typeof job.metadata?.updatedAt === "string" ? job.metadata.updatedAt : new Date().toISOString();
+    const legacySource = job.source as CampaignDraft["jobs"][number]["source"] & Record<string, unknown>;
+    const source = {
+      ...legacySource,
+      sourceId: typeof legacySource.sourceId === "string" ? legacySource.sourceId : null,
+      retrievedAt: typeof legacySource.retrievedAt === "string" ? legacySource.retrievedAt : now,
+      lastSeenAt: typeof legacySource.lastSeenAt === "string" ? legacySource.lastSeenAt : now,
+      active: typeof legacySource.active === "boolean" ? legacySource.active : true
+    };
+    return {
+      ...job,
+      schemaVersion: "1.1.0" as const,
+      source,
+      sources: Array.isArray(job.sources) && job.sources.length ? job.sources : [source],
+      matchFeedback: job.matchFeedback ?? null,
+      metadata: {
+        ...job.metadata,
+        lastSeenAt: typeof job.metadata?.lastSeenAt === "string" ? job.metadata.lastSeenAt : now,
+        sourceUpdatedAt: typeof job.metadata?.sourceUpdatedAt === "string" ? job.metadata.sourceUpdatedAt : null
+      }
+    };
+  }) : [];
+
   return {
     ...stored,
-    schemaVersion: "1.1.0",
-    jobs: "jobs" in stored && Array.isArray(stored.jobs) ? stored.jobs : [],
-    selectedJobId: "selectedJobId" in stored && typeof stored.selectedJobId === "string" ? stored.selectedJobId : null,
-    matchThreshold: "matchThreshold" in stored && typeof stored.matchThreshold === "number" ? stored.matchThreshold : 80,
-    dailyApplicationLimit: "dailyApplicationLimit" in stored && typeof stored.dailyApplicationLimit === "number" ? stored.dailyApplicationLimit : 25
-  };
+    schemaVersion: "1.2.0",
+    jobs,
+    sources: Array.isArray(stored.sources) ? stored.sources : [],
+    searchRuns: Array.isArray(stored.searchRuns) ? stored.searchRuns : [],
+    selectedJobId: typeof stored.selectedJobId === "string" ? stored.selectedJobId : null,
+    matchThreshold: typeof stored.matchThreshold === "number" ? stored.matchThreshold : 80,
+    dailyApplicationLimit: typeof stored.dailyApplicationLimit === "number" ? stored.dailyApplicationLimit : 25
+  } as CampaignDraft;
 }
 
 export async function loadCampaignDraft() {

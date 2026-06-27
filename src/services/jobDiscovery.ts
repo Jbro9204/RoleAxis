@@ -93,16 +93,20 @@ export function canonicalizeJobUrl(value: string) {
   return url.toString();
 }
 
-function sourceFromUrl(urlValue: string) {
+function sourceFromUrl(urlValue: string, company: string, now: string) {
   const url = new URL(urlValue);
   const portal = PORTALS.find((candidate) => candidate.pattern.test(url.hostname));
   const externalId = url.searchParams.get("gh_jid") ?? url.searchParams.get("jobId") ?? url.searchParams.get("job_id") ?? url.pathname.split("/").filter(Boolean).at(-1) ?? "";
   return {
-    name: portal?.name ?? url.hostname,
+    sourceId: null,
+    name: `${company} careers`,
     url: urlValue,
     externalId,
     portalType: portal?.type ?? "unclassified_web",
-    importMethod: "manual" as const
+    importMethod: "manual" as const,
+    retrievedAt: now,
+    lastSeenAt: now,
+    active: true
   };
 }
 
@@ -130,10 +134,12 @@ function normalizeSalary(input: JobImportInput, description: string): JobSalary 
   const minimum = input.salaryMinimum ?? parsed?.minimum ?? null;
   const maximum = input.salaryMaximum ?? parsed?.maximum ?? null;
   const period = input.salaryPeriod !== "unknown" ? input.salaryPeriod : parsed?.period ?? "unknown";
+  const currency = /^[A-Z]{3}$/.test(input.salaryCurrency) ? input.salaryCurrency : "USD";
+  const format = (value: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
   const rawText = minimum !== null
-    ? `$${minimum.toLocaleString("en-US")}${maximum !== null ? ` – $${maximum.toLocaleString("en-US")}` : ""} ${period}`
+    ? `${format(minimum)}${maximum !== null ? ` – ${format(maximum)}` : ""} ${period}`
     : parsed?.rawText ?? "";
-  return { minimum, maximum, currency: "USD", period, rawText };
+  return { minimum, maximum, currency, period, rawText };
 }
 
 function extractQualificationSections(description: string) {
@@ -342,12 +348,17 @@ export function validateJobImport(input: JobImportInput) {
   }
   if (input.salaryMinimum !== null && input.salaryMinimum < 0) errors.salaryMinimum = "Salary cannot be negative.";
   if (input.salaryMaximum !== null && input.salaryMinimum !== null && input.salaryMaximum < input.salaryMinimum) errors.salaryMaximum = "Maximum salary must be at least the minimum.";
+  if (!/^[A-Z]{3}$/.test(input.salaryCurrency)) errors.salaryCurrency = "Use a three-letter currency code.";
   if (Object.keys(errors).length) throw new JobImportError(errors);
 }
 
-export function createJobRecord(input: JobImportInput, campaign: CampaignDraft): JobRecord {
+export function createJobRecord(
+  input: JobImportInput,
+  campaign: CampaignDraft,
+  options: { source?: JobRecord["source"]; sourceUpdatedAt?: string | null; now?: string } = {}
+): JobRecord {
   validateJobImport(input);
-  const now = new Date().toISOString();
+  const now = options.now ?? new Date().toISOString();
   const canonicalUrl = canonicalizeJobUrl(input.url);
   const description = normalizeWhitespace(input.description);
   const company = normalizeWhitespace(input.company);
@@ -355,11 +366,13 @@ export function createJobRecord(input: JobImportInput, campaign: CampaignDraft):
   const location = normalizeWhitespace(input.location);
   const fingerprint = hash(`${comparisonText(company)}|${comparisonText(title)}|${comparisonText(location)}|${canonicalUrl}`);
   const qualifications = extractQualificationSections(description);
+  const source = options.source ?? sourceFromUrl(canonicalUrl, company, now);
   const base = {
-    schemaVersion: "1.0.0" as const,
+    schemaVersion: "1.1.0" as const,
     jobId: `job_${fingerprint}`,
     fingerprint,
-    source: sourceFromUrl(canonicalUrl),
+    source,
+    sources: [source],
     company,
     title,
     location,
@@ -371,7 +384,8 @@ export function createJobRecord(input: JobImportInput, campaign: CampaignDraft):
     keywords: extractKeywords(description),
     status: "found" as const,
     review: { decisionReason: null, decidedAt: null },
-    metadata: { discoveredAt: now, updatedAt: now, expiresAt: null }
+    matchFeedback: null,
+    metadata: { discoveredAt: now, updatedAt: now, expiresAt: null, lastSeenAt: now, sourceUpdatedAt: options.sourceUpdatedAt ?? null }
   };
   const scored = scoreJobMatch(base, campaign);
   return { ...base, ...scored };

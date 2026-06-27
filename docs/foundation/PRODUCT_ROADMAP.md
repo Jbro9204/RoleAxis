@@ -70,6 +70,8 @@ Exit criteria:
 
 ## Phase Four: Job Discovery And Matching
 
+Status: complete.
+
 Goal: discover jobs, normalize records, score fit, and create reviewable job dossiers.
 
 Deliverables:

@@ -43,6 +43,33 @@ Preferred Qualifications
 
 Compensation
 $90,000 - $115,000 per year`;
+const sourceFeed = {
+  source: { identifier: "meridian", boardUrl: "https://jobs.lever.co/meridian" },
+  jobs: [{
+    externalId: "meridian-operations-1",
+    url: "https://jobs.lever.co/meridian/meridian-operations-1",
+    title: "Regional Operations Director",
+    location: "Raleigh, NC",
+    remoteType: "hybrid",
+    description: `Meridian Field Systems is hiring a Regional Operations Director to lead workforce planning, service quality, field performance, and manager coaching across a growing operation.
+
+Requirements
+- Five years of operations leadership experience required
+- Advanced Excel and workforce planning skills
+- Bachelor's degree or equivalent experience
+
+Preferred Qualifications
+- Process improvement certification preferred`,
+    salaryMinimum: 105000,
+    salaryMaximum: 130000,
+    salaryCurrency: "USD",
+    salaryPeriod: "year",
+    sourceUpdatedAt: null
+  }],
+  totalAvailable: 1,
+  truncated: false,
+  fetchedAt: "2026-06-27T12:00:00.000Z"
+};
 
 if (!outputDirectory.startsWith(path.resolve(root, "tmp") + path.sep)) {
   throw new Error("Visual QA output must stay inside the repository tmp directory.");
@@ -64,9 +91,10 @@ if (!executablePath) {
   throw new Error("No supported local Chromium browser was found. Set ROLEAXIS_BROWSER_PATH and run again.");
 }
 
-const server = spawn(process.execPath, [path.resolve(root, "node_modules", "vite", "bin", "vite.js"), "--host", "127.0.0.1", "--port", "4173", "--strictPort"], {
+const server = spawn(process.execPath, [path.resolve(root, "server-dist", "index.js")], {
   cwd: root,
-  stdio: "ignore"
+  stdio: "ignore",
+  env: { ...process.env, PORT: "4173" }
 });
 
 async function waitForServer() {
@@ -84,7 +112,6 @@ async function waitForServer() {
 }
 
 async function accessibilityAudit(page) {
-  await page.addScriptTag({ content: axe.source });
   const result = await page.evaluate(async () => window.axe.run(document, {
     runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }
   }));
@@ -126,6 +153,7 @@ try {
     { name: "mobile", viewport: { width: 390, height: 844 } }
   ]) {
     const context = await browser.newContext({ viewport: target.viewport, deviceScaleFactor: 1 });
+    await context.addInitScript({ content: axe.source });
     const page = await context.newPage();
     const consoleErrors = [];
     page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
@@ -139,11 +167,15 @@ try {
   }
 
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
+  await context.addInitScript({ content: axe.source });
   const page = await context.newPage();
   const consoleErrors = [];
   page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
   await page.goto(appUrl, { waitUntil: "networkidle" });
+  await page.route("**/api/job-sources?**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(sourceFeed) });
+  });
   await page.locator('input[type="file"]').setInputFiles({ name: "sample-resume.txt", mimeType: "text/plain", buffer: Buffer.from(sampleResume) });
   await page.getByRole("heading", { name: /Nothing becomes a claim/i }).waitFor();
 
@@ -216,10 +248,27 @@ try {
 
   await page.getByRole("heading", { name: /Your campaign is calibrated/i }).waitFor();
   await page.getByRole("button", { name: "Discover", exact: true }).click();
-  await page.getByRole("heading", { name: /Turn a posting into accountable signal/i }).waitFor();
+  await page.getByRole("heading", { name: /Build signal you can defend/i }).waitFor();
   await settleVisual(page);
   await page.screenshot({ path: path.join(outputDirectory, "desktop-discovery-empty.png"), fullPage: true });
   report.push({ name: "discovery-empty", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+
+  await page.getByRole("button", { name: /Connect public board/i }).first().click();
+  await page.getByRole("heading", { name: /Connect the employer’s careers page/i }).waitFor();
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-source-connection.png"), fullPage: true });
+  report.push({ name: "source-connection", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+  await page.getByLabel("Employer name").fill("Meridian Field Systems");
+  await page.getByLabel("Public careers URL").fill("https://jobs.lever.co/meridian");
+  await page.getByRole("button", { name: /Connect and check now/i }).click();
+  await page.getByText(/Meridian Field Systems is connected/i).waitFor();
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "desktop-live-source-result.png"), fullPage: true });
+  report.push({ name: "live-source-result", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await settleVisual(page);
+  await page.screenshot({ path: path.join(outputDirectory, "mobile-live-source-result.png"), fullPage: true });
+  report.push({ name: "live-source-result-mobile", viewport: { width: 390, height: 844 }, layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+  await page.setViewportSize({ width: 1600, height: 1000 });
 
   await page.getByRole("button", { name: /Import a role/i }).first().click();
   await page.getByRole("heading", { name: /Import the posting as published/i }).waitFor();
@@ -240,11 +289,14 @@ try {
   await page.screenshot({ path: path.join(outputDirectory, "desktop-discovery-result.png"), fullPage: true });
   report.push({ name: "discovery-result", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
 
-  await page.getByRole("button", { name: /Open dossier/i }).click();
+  await page.locator(".jobSignalRow").filter({ has: page.getByRole("heading", { name: "Senior Operations Manager" }) }).getByRole("button", { name: /Open dossier/i }).click();
   await page.getByRole("heading", { name: "Senior Operations Manager" }).waitFor();
   await settleVisual(page);
   await page.screenshot({ path: path.join(outputDirectory, "desktop-job-dossier.png"), fullPage: true });
   report.push({ name: "job-dossier-desktop", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors });
+
+  await page.getByRole("button", { name: "Feels right" }).click();
+  await page.getByRole("button", { name: "Feels right" }).waitFor();
 
   await page.getByRole("button", { name: "Skip role" }).click();
   await page.getByRole("heading", { name: /Why are you skipping this role/i }).waitFor();
@@ -280,7 +332,8 @@ try {
     const draft = records.find((record) => record.id === "campaign-draft");
     return {
       hasEncryptedDraft: draft?.ciphertext instanceof ArrayBuffer,
-      containsPlaintextJob: JSON.stringify(records).includes("Northstar Services")
+      containsPlaintextJob: JSON.stringify(records).includes("Northstar Services"),
+      containsPlaintextSource: JSON.stringify(records).includes("Meridian Field Systems")
     };
   });
   report.push({ name: "review-queue", layout: await layoutAudit(page), accessibility: await accessibilityAudit(page), consoleErrors, storageBoundary: jobStorageBoundary });
@@ -292,6 +345,7 @@ try {
     entry.accessibility?.length ||
     entry.storageBoundary?.containsPlaintextName ||
     entry.storageBoundary?.containsPlaintextJob ||
+    entry.storageBoundary?.containsPlaintextSource ||
     (entry.storageBoundary && !entry.storageBoundary.hasEncryptedDraft)
   );
 

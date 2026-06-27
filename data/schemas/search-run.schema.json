@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roleaxis.local/schemas/search-run.schema.json",
+  "title": "RoleAxis Search Run",
+  "type": "object",
+  "required": ["runId", "sourceId", "sourceName", "startedAt", "completedAt", "status", "fetchedCount", "newCount", "updatedCount", "duplicateCount", "unusableCount", "closedCount", "errorMessage"],
+  "additionalProperties": false,
+  "properties": {
+    "runId": { "type": "string" },
+    "sourceId": { "type": "string" },
+    "sourceName": { "type": "string" },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": ["string", "null"] },
+    "status": { "enum": ["running", "success", "partial", "failed"] },
+    "fetchedCount": { "type": "integer", "minimum": 0 },
+    "newCount": { "type": "integer", "minimum": 0 },
+    "updatedCount": { "type": "integer", "minimum": 0 },
+    "duplicateCount": { "type": "integer", "minimum": 0 },
+    "unusableCount": { "type": "integer", "minimum": 0 },
+    "closedCount": { "type": "integer", "minimum": 0 },
+    "errorMessage": { "type": ["string", "null"] }
+  }
+}

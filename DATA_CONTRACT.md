@@ -27,6 +27,8 @@ The file-backed structures should later map to database tables without changing 
 - `automation-rules` maps to search rules, approval rules, submit rules, source controls, and daily limits.
 - `intake-question-set` maps to the guided intake prompts shown before any application automation begins.
 - `job` maps to discovered jobs, sources, extracted requirements, match records, and review state.
+- `source-connection` maps to configured public boards, health state, last checks, and successful-run timestamps.
+- `search-run` maps to immutable discovery receipts, result counts, partial states, closures, and safe error records.
 - `application` maps to application records, submitted answers, documents used, portal account references, confirmations, and status history.
 - `interview` maps to interview records, prep notes, practice sessions, follow-ups, and outcomes.
 
@@ -71,7 +73,8 @@ Unknown, unsupported, sensitive, legal, medical, demographic, background, milita
 The launch and intake workflow uses an encrypted browser-local draft before a production account and database boundary exist.
 
 - Resume bytes and extracted source text are not retained after local processing.
-- Confirmed profile facts, intake answers, normalized job records, review decisions, approval metadata, and campaign state are encrypted before being written to IndexedDB.
+- Confirmed profile facts, intake answers, source connections, search-run receipts, normalized job records, match feedback, review decisions, approval metadata, and campaign state are encrypted before being written to IndexedDB.
+- Live source receipts store only public posting provenance and timing. Private profile or campaign evidence is never added to a source request.
 - The local encryption key is non-extractable and scoped to the browser workspace.
 - The draft adapter does not provide multi-user authentication, synchronization, or backup and must not be represented as a production credential vault.
 - Portal passwords, security answers, recovery codes, tokens, and MFA secrets are not accepted by this adapter.

@@ -18,7 +18,7 @@ function campaignFixture(): CampaignDraft {
     updatedAt: now
   });
   return {
-    schemaVersion: "1.1.0",
+    schemaVersion: "1.2.0",
     campaignId: "campaign_test",
     status: "ready",
     resume: {
@@ -41,6 +41,8 @@ function campaignFixture(): CampaignDraft {
       "search.minimum_compensation": answer("search.minimum_compensation", 75000)
     },
     jobs: [],
+    sources: [],
+    searchRuns: [],
     selectedJobId: null,
     activeSectionKey: "identity_contact",
     automationMode: "approval_required",
@@ -59,6 +61,7 @@ const jobInput: JobImportInput = {
   remoteType: "hybrid",
   salaryMinimum: 90000,
   salaryMaximum: 115000,
+  salaryCurrency: "USD",
   salaryPeriod: "year",
   description: `We are hiring a Senior Operations Manager to lead workforce planning and performance.
 

@@ -4,15 +4,17 @@ RoleAxis matching is deterministic, evidence-led, and explainable. A match score
 
 ## Current Source Boundary
 
-The first supported adapter is manual job-posting import.
+Phase Four supports two evidence paths behind the same normalized source contract:
 
-- The user supplies the original URL, published role details, and complete posting text.
-- RoleAxis records the canonical source URL but does not fetch, scrape, sign in to, or interact with the source.
-- Tracking parameters are removed while job identifiers are preserved.
-- The posting is stored as plain text inside the encrypted campaign draft. Source HTML and scripts are never executed.
-- Each import receives a stable fingerprint based on canonical source and normalized role identity.
+- Manual import records a complete posting supplied by the user. Tracking parameters are removed while job identifiers are preserved.
+- Verified public feeds read published roles from supported employer career boards without signing in, submitting, or sharing campaign data.
+- The same-origin gateway accepts public careers URLs only from a fixed host allowlist. It is not an arbitrary URL proxy.
+- Upstream checks use HTTPS, short timeouts, response-size and role-count limits, per-client request limits, and a brief cache.
+- Only the public careers URL crosses the local boundary. Resume facts, intake answers, private compensation rules, scores, and decisions do not.
+- Source HTML is converted to inert plain text before it enters the matching pipeline. Scripts and source formatting are never executed.
+- Every receipt records the external identifier, canonical posting URL, retrieval time, last-seen time, activity state, and import method.
 
-Network source adapters must implement the same normalized output and provenance contract before they can appear as active integrations.
+Every source check creates a durable run record with start and completion times, status, fetched count, new count, updated count, reconciliation count, omitted count, closure count, and a safe error message when needed.
 
 ## Normalization
 
@@ -25,7 +27,15 @@ Every imported role is converted to the job schema:
 - Searchable posting keywords.
 - Discovery and update timestamps.
 
-Duplicate checks compare canonical URLs, stable fingerprints, and normalized company-title-location identity.
+Duplicate checks compare canonical URLs, stable fingerprints, and normalized company-title-location identity. When the same role appears in more than one source, RoleAxis keeps one stable dossier and appends the additional source receipt.
+
+## Freshness And Closure
+
+- A complete successful run may mark a previously observed source receipt inactive when that posting is no longer returned.
+- A dossier is marked closed only when every connected live receipt for the role is inactive.
+- Truncated runs and runs containing unusable postings never close missing roles.
+- Failed runs preserve the prior campaign state and record the failure on the source and run receipt.
+- Closed dossiers remain in the campaign record and may reopen if a later complete run observes the posting again.
 
 ## Score Dimensions
 
@@ -62,10 +72,13 @@ The score and hard campaign mismatches produce a recommendation:
 
 The current source adapter never returns `apply_now`. Application preparation and submission require later verified workflows.
 
+The dossier also accepts `too_low`, `accurate`, or `too_high` match feedback. This feedback is stored locally as user judgment. It does not silently modify the deterministic score.
+
 ## Quality And Limitations
 
 - Matching is intentionally transparent rather than predictive or opaque.
 - Phrase overlap can miss equivalent terminology and should be improved through controlled taxonomies, not invented evidence.
-- Manual imports do not prove that a posting is still active.
+- Manual imports do not prove that a posting is still active; freshness requires a verified live receipt.
+- Public boards can omit fields or cap results. Partial checks are labeled and cannot drive closure.
 - A high score is a review aid, not a guarantee of eligibility, interview likelihood, or employment outcome.
 - Source adapters, taxonomies, and scoring changes require tests for deduplication, truthfulness, hard gates, and explanation quality.

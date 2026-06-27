@@ -3,24 +3,32 @@
   "$id": "https://roleaxis.local/schemas/job.schema.json",
   "title": "RoleAxis Job",
   "type": "object",
-  "required": ["schemaVersion", "jobId", "fingerprint", "source", "company", "title", "status", "outcome", "match", "review", "metadata"],
+  "required": ["schemaVersion", "jobId", "fingerprint", "source", "sources", "company", "title", "status", "outcome", "match", "review", "matchFeedback", "metadata"],
   "additionalProperties": false,
-  "properties": {
-    "schemaVersion": { "type": "string", "const": "1.0.0" },
-    "jobId": { "type": "string" },
-    "fingerprint": { "type": "string" },
-    "source": {
+  "$defs": {
+    "sourceReceipt": {
       "type": "object",
-      "required": ["name", "url", "importMethod"],
+      "required": ["sourceId", "name", "url", "externalId", "portalType", "importMethod", "retrievedAt", "lastSeenAt", "active"],
       "additionalProperties": false,
       "properties": {
+        "sourceId": { "type": ["string", "null"] },
         "name": { "type": "string" },
-        "url": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
         "externalId": { "type": "string" },
         "portalType": { "type": "string" },
-        "importMethod": { "enum": ["manual"] }
+        "importMethod": { "enum": ["manual", "public_feed"] },
+        "retrievedAt": { "type": "string", "format": "date-time" },
+        "lastSeenAt": { "type": "string", "format": "date-time" },
+        "active": { "type": "boolean" }
       }
-    },
+    }
+  },
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.1.0" },
+    "jobId": { "type": "string" },
+    "fingerprint": { "type": "string" },
+    "source": { "$ref": "#/$defs/sourceReceipt" },
+    "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sourceReceipt" } },
     "company": { "type": "string" },
     "title": { "type": "string" },
     "location": { "type": "string" },
@@ -77,16 +85,32 @@
         "decidedAt": { "type": ["string", "null"] }
       }
     },
+    "matchFeedback": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["rating", "note", "updatedAt"],
+          "additionalProperties": false,
+          "properties": {
+            "rating": { "enum": ["accurate", "too_high", "too_low"] },
+            "note": { "type": "string" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          }
+        }
+      ]
+    },
     "metadata": {
       "type": "object",
-      "required": ["discoveredAt", "updatedAt"],
+      "required": ["discoveredAt", "updatedAt", "expiresAt", "lastSeenAt", "sourceUpdatedAt"],
       "additionalProperties": false,
       "properties": {
-        "discoveredAt": { "type": "string" },
-        "updatedAt": { "type": "string" },
-        "expiresAt": { "type": ["string", "null"] }
+        "discoveredAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": ["string", "null"] },
+        "lastSeenAt": { "type": "string", "format": "date-time" },
+        "sourceUpdatedAt": { "type": ["string", "null"] }
       }
     }
   }
 }
-

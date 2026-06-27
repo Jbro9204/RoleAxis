@@ -86,7 +86,7 @@ Phase One foundation documents live in [docs/foundation](docs/foundation):
 
 ## Development
 
-RoleAxis runs as a Vite React application backed by checked-in foundation templates and explicit product data contracts. The current launch slice includes:
+RoleAxis runs as a Vite React application with a same-origin read-only source gateway, checked-in foundation templates, and explicit product data contracts. The current product includes:
 
 - Local PDF, DOCX, TXT, and Markdown resume text extraction.
 - A truth-profile review where every extracted fact begins unapproved.
@@ -94,18 +94,25 @@ RoleAxis runs as a Vite React application backed by checked-in foundation templa
 - An encrypted browser-local campaign draft.
 - Command, rules, privacy, loading, error, blocked, and empty states.
 - Manual job-posting import with canonical source provenance and duplicate protection.
+- Verified public career-board connections with bounded source checks, durable run receipts, freshness tracking, and conservative closure handling.
+- Cross-source reconciliation that retains every source receipt on one stable dossier.
 - Deterministic five-dimension matching with visible strengths, concerns, and score anatomy.
+- Local match-quality feedback that records the user’s judgment without silently changing the score.
 - Job dossiers, review-queue decisions, saved roles, and recorded skip reasons.
 
-The original resume file is processed in the browser and is not retained in the campaign draft. No job source, portal, account-creation, or submission integration is presented as active before it has an end-to-end verified implementation.
+The original resume file is processed in the browser and is not retained in the campaign draft. Public source checks transmit only the public careers URL; resume facts, intake answers, scores, and decisions stay in the encrypted browser-local workspace. No portal login, account-creation, or submission integration is presented as active before it has an end-to-end verified implementation.
 
 ```bash
 pnpm install
 pnpm dev
 pnpm build
 pnpm preview
+pnpm test
+pnpm qa:visual
 ```
+
+`pnpm dev` runs the application and its local source gateway on `http://127.0.0.1:5173`. `pnpm preview` serves the production build through the same secure boundary. `PORT` may be set when another local port is required.
 
 ## Repository Status
 
-RoleAxis has completed the foundation stage and now contains verified Phase Three and Phase Four vertical slices: resume intake, truth confirmation, campaign calibration, manual job discovery, deterministic matching, job dossiers, and review-queue handoff. Network job sources, document tailoring, portal automation, accounts, submission, and interview operations remain explicit integrity gates until their end-to-end implementations are verified.
+RoleAxis has completed Phase Three and Phase Four: resume intake, truth confirmation, campaign calibration, manual and verified public-source discovery, durable search runs, cross-source reconciliation, deterministic matching, job dossiers, match-quality feedback, and review-queue handoff. Document tailoring, portal automation, accounts, submission, and interview operations remain explicit integrity gates until their end-to-end implementations are verified.

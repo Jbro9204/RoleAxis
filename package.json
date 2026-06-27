@@ -4,12 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --configLoader native",
-    "build": "tsc -b && vite build --configLoader native",
-    "preview": "vite preview --host 127.0.0.1 --configLoader native",
-    "check": "tsc -b",
+    "dev": "tsx server/index.ts --dev",
+    "build": "tsc -b && vite build --configLoader native && tsc -p tsconfig.server.json",
+    "start": "node server-dist/index.js",
+    "preview": "node server-dist/index.js",
+    "check": "tsc -b && tsc -p tsconfig.server.json --noEmit",
     "test": "vitest run",
-    "qa:visual": "node scripts/visual-qa.mjs"
+    "qa:visual": "pnpm build && node scripts/visual-qa.mjs"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.2.8",
@@ -21,11 +22,13 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@types/node": "^26.0.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "axe-core": "^4.12.1",
     "playwright-core": "^1.61.1",
+    "tsx": "^4.22.4",
     "typescript": "^5.9.3",
     "vite": "^7.2.7",
     "vitest": "^4.1.9"
